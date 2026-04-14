@@ -26,7 +26,7 @@ class ReceiptUpdate(BaseModel):
     main_category_id: Optional[int] = None
     line_items: Optional[List[LineItemUpdate]] = None
 
-class BulkApproveRequest(BaseModel):
+class BulkActionRequest(BaseModel):
     receipt_ids: List[int]
 
 def handle_single_approval(receipt_id: int, user_id: str, db: Session, bg_tasks: BackgroundTasks):
@@ -46,6 +46,31 @@ def handle_single_approval(receipt_id: int, user_id: str, db: Session, bg_tasks:
     user_settings = db.query(models.UserSettings).filter(models.UserSettings.user_id == user_id).first()
     if user_settings and user_settings.zoho_integration_enabled:
         bg_tasks.add_task(push_receipt_to_zoho, receipt.id, user_id)
+
+def handle_single_rejection(receipt_id: int, user_id: str, db: Session):
+    receipt = db.query(models.Receipt).filter(
+        models.Receipt.id == receipt_id,
+        models.Receipt.user_id == user_id,
+        models.Receipt.status == models.ReceiptStatus.PENDING
+    ).first()
+    
+    if not receipt:
+        raise HTTPException(status_code=404, detail="Receipt not found")
+        
+    receipt.status = models.ReceiptStatus.REJECTED
+    db.commit()
+
+def handle_single_deletion(receipt_id: int, user_id: str, db: Session):
+    receipt = db.query(models.Receipt).filter(
+        models.Receipt.id == receipt_id,
+        models.Receipt.user_id == user_id
+    ).first()
+    
+    if not receipt:
+        raise HTTPException(status_code=404, detail="Receipt not found")
+        
+    db.delete(receipt)
+    db.commit()
 
 @router.get("/queue")
 def get_review_queue(user: dict = Depends(verify_token), db: Session = Depends(get_db)):
@@ -102,6 +127,27 @@ def get_review_queue(user: dict = Depends(verify_token), db: Session = Depends(g
         
     return {"status": "success", "data": result}
 
+@router.put("/bulk-approve")
+def bulk_approve_receipts(data: BulkActionRequest, background_tasks: BackgroundTasks, user: dict = Depends(verify_token), db: Session = Depends(get_db)):
+    """Approve multiple receipts, moving them out of the review queue and handling line item tracking logic."""
+    for rid in data.receipt_ids:
+        handle_single_approval(rid, user['uid'], db, background_tasks)
+    return {"status": "success", "message": f"{len(data.receipt_ids)} receipts approved successfully"}
+
+@router.put("/bulk-reject")
+def bulk_reject_receipts(data: BulkActionRequest, user: dict = Depends(verify_token), db: Session = Depends(get_db)):
+    """Reject multiple receipts, moving them out of the review queue."""
+    for rid in data.receipt_ids:
+        handle_single_rejection(rid, user['uid'], db)
+    return {"status": "success", "message": f"{len(data.receipt_ids)} receipts rejected successfully"}
+
+@router.delete("/bulk-delete")
+def bulk_delete_receipts(data: BulkActionRequest, user: dict = Depends(verify_token), db: Session = Depends(get_db)):
+    """Delete multiple receipts from the database."""
+    for rid in data.receipt_ids:
+        handle_single_deletion(rid, user['uid'], db)
+    return {"status": "success", "message": f"{len(data.receipt_ids)} receipts deleted successfully"}
+
 @router.put("/{receipt_id}")
 def update_receipt(receipt_id: int, data: ReceiptUpdate, user: dict = Depends(verify_token), db: Session = Depends(get_db)):
     """Update receipt data including categories."""
@@ -151,15 +197,20 @@ def update_receipt(receipt_id: int, data: ReceiptUpdate, user: dict = Depends(ve
     db.commit()
     return {"status": "success", "message": "Receipt updated successfully"}
 
-@router.put("/bulk-approve")
-def bulk_approve_receipts(data: BulkApproveRequest, background_tasks: BackgroundTasks, user: dict = Depends(verify_token), db: Session = Depends(get_db)):
-    """Approve multiple receipts, moving them out of the review queue and handling line item tracking logic."""
-    for rid in data.receipt_ids:
-        handle_single_approval(rid, user['uid'], db, background_tasks)
-    return {"status": "success", "message": f"{len(data.receipt_ids)} receipts approved successfully"}
-
 @router.put("/{receipt_id}/approve")
 def approve_receipt(receipt_id: int, background_tasks: BackgroundTasks, user: dict = Depends(verify_token), db: Session = Depends(get_db)):
     """Approve a single receipt."""
     handle_single_approval(receipt_id, user['uid'], db, background_tasks)
     return {"status": "success", "message": "Receipt approved successfully"}
+
+@router.put("/{receipt_id}/reject")
+def reject_receipt(receipt_id: int, user: dict = Depends(verify_token), db: Session = Depends(get_db)):
+    """Reject a single receipt."""
+    handle_single_rejection(receipt_id, user['uid'], db)
+    return {"status": "success", "message": "Receipt rejected successfully"}
+
+@router.delete("/{receipt_id}")
+def delete_receipt(receipt_id: int, user: dict = Depends(verify_token), db: Session = Depends(get_db)):
+    """Delete a single receipt."""
+    handle_single_deletion(receipt_id, user['uid'], db)
+    return {"status": "success", "message": "Receipt deleted successfully"}

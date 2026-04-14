@@ -15,7 +15,8 @@ from app.models import models
 router = APIRouter()
 
 # Initialize Gemini Client globally
-gemini_client = genai.Client(api_key="AIzaSyBHmXZKwsbzlHeDnrGsLVyu-CEt9QvSqQw")
+gemini_api_key = os.environ.get("GEMINI_API_KEY")
+gemini_client = genai.Client(api_key=gemini_api_key) if gemini_api_key else None
 
 # OCR Prompt Definition
 RECEIPT_OCR_PROMPT = """
@@ -146,7 +147,7 @@ Expected JSON schema:
             if gemini_client is None:
                 raise Exception("GEMINI_API_KEY is missing or invalid.")
             response = gemini_client.models.generate_content(
-                model='gemini-2.0-flash',
+                model='gemini-2.5-flash',
                 contents=[document, context_prompt],
                 config=types.GenerateContentConfig(
                     temperature=0.0,

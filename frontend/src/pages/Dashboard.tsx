@@ -189,50 +189,7 @@ export default function Dashboard() {
         </Card>
       </main>
 
-      {/* Mobile-First Bottom Navigation */}
-      <nav className="fixed bottom-0 w-full bg-white dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800 flex justify-around items-center h-16 pb-safe z-20">
-        <button 
-          onClick={() => navigate('/')}
-          className="flex flex-col items-center gap-1 text-zinc-900 dark:text-zinc-50"
-        >
-          <LayoutDashboard className="h-6 w-6" />
-          <span className="text-[11px] font-medium">Home</span>
-        </button>
-        <button 
-          onClick={() => navigate('/review')}
-          className="flex flex-col items-center gap-1 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
-        >
-          <Inbox className="h-6 w-6" />
-          <span className="text-[11px] font-medium">Review</span>
-        </button>
-        
-        {/* Floating Quick Add Button */}
-        <div className="relative -top-6">
-          <Button 
-            onClick={() => navigate('/capture')}
-            size="icon"
-            className="h-14 w-14 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform"
-          >
-            <PlusCircle className="h-6 w-6" />
-          </Button>
-        </div>
 
-        <button 
-          onClick={() => navigate('/history')}
-          className="flex flex-col items-center gap-1 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
-        >
-          <History className="h-6 w-6" />
-          <span className="text-[11px] font-medium">History</span>
-        </button>
-
-        <button 
-          onClick={() => navigate('/settings')}
-          className="flex flex-col items-center gap-1 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
-        >
-          <Settings className="h-6 w-6" />
-          <span className="text-[11px] font-medium">Settings</span>
-        </button>
-      </nav>
     </div>
   );
 }

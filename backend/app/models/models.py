@@ -18,6 +18,7 @@ class ReceiptStatus(str, enum.Enum):
     PENDING = "PENDING"
     APPROVED = "APPROVED"
     FAILED = "FAILED"
+    REJECTED = "REJECTED"
 
 class Category(Base):
     __tablename__ = "categories"

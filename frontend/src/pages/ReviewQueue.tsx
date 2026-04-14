@@ -10,6 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { format, parseISO } from "date-fns";
+import { cn } from "@/lib/utils";
 
 export default function ReviewQueue() {
   const navigate = useNavigate();
@@ -26,6 +30,20 @@ export default function ReviewQueue() {
   // Bulk actions
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [isBulkProcessing, setIsBulkProcessing] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setSelectedIds([]);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   useEffect(() => {
     fetchQueue();
@@ -131,7 +149,39 @@ export default function ReviewQueue() {
       setReceipts(prev => prev.filter(r => !selectedIds.includes(r.id)));
       setSelectedIds([]);
     } catch (err: any) {
-      alert("Bulk approval failed: " + (err.response?.data?.detail || err.message));
+      const message = typeof err.response?.data?.detail === 'string' 
+        ? err.response.data.detail
+        : JSON.stringify(err.response?.data?.detail) || err.message;
+      alert("Bulk approval failed: " + message);
+    } finally {
+      setIsBulkProcessing(false);
+    }
+  };
+
+  const handleBulkReject = async () => {
+    if (selectedIds.length === 0) return;
+    try {
+      setIsBulkProcessing(true);
+      await api.put('/review/bulk-reject', { receipt_ids: selectedIds });
+      setReceipts(prev => prev.filter(r => !selectedIds.includes(r.id)));
+      setSelectedIds([]);
+    } catch (err: any) {
+      alert("Bulk rejection failed: " + (err.response?.data?.detail || err.message));
+    } finally {
+      setIsBulkProcessing(false);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    if (!confirm("Are you sure you want to permanently delete these receipts?")) return;
+    try {
+      setIsBulkProcessing(true);
+      await api.delete('/review/bulk-delete', { data: { receipt_ids: selectedIds } });
+      setReceipts(prev => prev.filter(r => !selectedIds.includes(r.id)));
+      setSelectedIds([]);
+    } catch (err: any) {
+      alert("Bulk deletion failed: " + (err.response?.data?.detail || err.message));
     } finally {
       setIsBulkProcessing(false);
     }
@@ -188,7 +238,7 @@ export default function ReviewQueue() {
             {receipts.map((receipt) => (
               <Card key={receipt.id} className={`overflow-hidden flex flex-col md:flex-row shadow-sm transition-all border-2 ${selectedIds.includes(receipt.id) ? 'border-zinc-900 dark:border-zinc-50' : 'border-zinc-200 dark:border-zinc-800'}`}>
                 {/* Selection Overlay */}
-                <div className="absolute top-4 left-4 z-10 hidden md:block">
+                 <div className={`absolute top-4 left-4 z-10 hidden md:block transition-opacity ${selectedIds.length > 0 ? 'opacity-100' : 'opacity-0'}`}>
                    <Checkbox 
                       className="bg-white dark:bg-zinc-900 border-zinc-400 dark:border-zinc-500 w-5 h-5" 
                       checked={selectedIds.includes(receipt.id)} 
@@ -201,7 +251,7 @@ export default function ReviewQueue() {
                   className="w-full md:w-64 md:shrink-0 bg-zinc-100 dark:bg-zinc-900 border-b md:border-b-0 md:border-r border-zinc-200 dark:border-zinc-800 aspect-video md:aspect-auto flex items-center justify-center overflow-hidden relative cursor-pointer group"
                   onClick={() => toggleSelection(receipt.id)}
                 >
-                  <div className="absolute top-4 left-4 z-10 md:hidden">
+                  <div className={`absolute top-4 left-4 z-10 md:hidden transition-opacity ${selectedIds.length > 0 ? 'opacity-100' : 'opacity-0'}`}>
                     <Checkbox 
                        className="bg-white/80 backdrop-blur-sm dark:bg-zinc-900/80 border-zinc-500 w-6 h-6 shadow-sm" 
                        checked={selectedIds.includes(receipt.id)} 
@@ -232,38 +282,52 @@ export default function ReviewQueue() {
                           <X size={16} />
                         </Button>
                       </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                          <Label>Vendor</Label>
-                          <Input 
-                            value={editForm.vendor || ''}
-                            onChange={(e) => setEditForm({...editForm, vendor: e.target.value})}
-                          />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="space-y-1.5 sm:col-span-2">
+                            <Label>Vendor</Label>
+                            <Input 
+                              value={editForm.vendor || ''}
+                              onChange={(e) => setEditForm({...editForm, vendor: e.target.value})}
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label>Date</Label>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant={"outline"}
+                                  className={cn(
+                                    "w-full justify-start text-left font-normal",
+                                    !editForm.date && "text-muted-foreground"
+                                  )}
+                                >
+                                  <Calendar className="mr-2 h-4 w-4" />
+                                  {editForm.date ? format(parseISO(editForm.date), "PPP") : <span>Pick a date</span>}
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0">
+                                <CalendarComponent
+                                  mode="single"
+                                  selected={editForm.date ? parseISO(editForm.date) : undefined}
+                                  onSelect={(date) => setEditForm({...editForm, date: date ? format(date, 'yyyy-MM-dd') : ''})}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label>Total Amount ({receipt.currency})</Label>
+                            <Input 
+                              type="text"
+                              value={new Intl.NumberFormat().format(editForm.total_amount || 0)}
+                              onChange={(e) => {
+                                const numericValue = parseFloat(e.target.value.replace(/,/g, ''));
+                                setEditForm({...editForm, total_amount: isNaN(numericValue) ? 0 : numericValue});
+                              }}
+                            />
+                          </div>
                         </div>
-                        <div className="space-y-1.5">
-                          <Label>Date (YYYY-MM-DD)</Label>
-                          <Input 
-                            value={editForm.date || ''}
-                            onChange={(e) => setEditForm({...editForm, date: e.target.value})}
-                          />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label>Total Amount ({receipt.currency})</Label>
-                          <Input 
-                            type="number" step="0.01"
-                            value={editForm.total_amount || 0}
-                            onChange={(e) => setEditForm({...editForm, total_amount: parseFloat(e.target.value) || 0})}
-                          />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label>Tax Amount ({receipt.currency})</Label>
-                          <Input 
-                            type="number" step="0.01"
-                            value={editForm.tax_amount || 0}
-                            onChange={(e) => setEditForm({...editForm, tax_amount: parseFloat(e.target.value) || 0})}
-                          />
-                        </div>
-                        
+
                         {/* Main Category Edit */}
                         <div className="space-y-1.5 sm:col-span-2 mt-2">
                           <Label>Main Category</Label>
@@ -283,7 +347,6 @@ export default function ReviewQueue() {
                             </SelectContent>
                           </Select>
                         </div>
-                      </div>
                       
                       {/* Track Line Items Toggle */}
                       <div className="mt-6 flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md">
@@ -355,13 +418,13 @@ export default function ReviewQueue() {
                     </div>
                   ) : (
                     /* Display Mode */
-                    <>
+                    <div className="flex flex-col flex-1 h-full cursor-pointer" onClick={() => toggleSelection(receipt.id)}>
                       <div className="flex justify-between items-start mb-4">
                         <div className="flex-1 min-w-0 pr-4">
                           <div className="flex items-center gap-2">
                             <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 truncate">{receipt.vendor}</h3>
                             {receipt.main_category && (
-                              <Badge variant="outline" style={{ borderColor: receipt.main_category.color_code, color: receipt.main_category.color_code }}>
+                              <Badge style={{ backgroundColor: receipt.main_category.color_code, color: 'white' }}>
                                 {receipt.main_category.name}
                               </Badge>
                             )}
@@ -373,11 +436,11 @@ export default function ReviewQueue() {
                         </div>
                         <div className="text-right shrink-0">
                           <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
-                            {receipt.currency}{receipt.total_amount?.toFixed(2)}
+                            {receipt.currency}{new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(receipt.total_amount || 0)}
                           </p>
                           {receipt.tax_amount > 0 && (
                             <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                              includes {receipt.currency}{receipt.tax_amount?.toFixed(2)} tax
+                              includes {receipt.currency}{new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(receipt.tax_amount || 0)} tax
                             </p>
                           )}
                         </div>
@@ -389,7 +452,7 @@ export default function ReviewQueue() {
                             variant="ghost" 
                             size="sm" 
                             className="h-8 text-xs text-zinc-500" 
-                            onClick={() => setShowLineItemsId(showLineItemsId === receipt.id ? null : receipt.id)}
+                            onClick={(e) => { e.stopPropagation(); setShowLineItemsId(showLineItemsId === receipt.id ? null : receipt.id); }}
                           >
                             {showLineItemsId === receipt.id ? <ChevronUp className="mr-1 h-3 w-3"/> : <ChevronDown className="mr-1 h-3 w-3"/>}
                             {showLineItemsId === receipt.id ? "Hide Line Items" : "Show Line Items"}
@@ -409,7 +472,7 @@ export default function ReviewQueue() {
                                   )}
                                   <span className="text-zinc-700 dark:text-zinc-300 truncate">{item.description}</span>
                                 </div>
-                                <span className="text-zinc-900 dark:text-zinc-50 font-medium shrink-0">{receipt.currency}{item.amount?.toFixed(2)}</span>
+                                <span className="text-zinc-900 dark:text-zinc-50 font-medium shrink-0">{receipt.currency}{new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(item.amount || 0)}</span>
                               </li>
                             ))}
                             {(!receipt.line_items || receipt.line_items.length === 0) && (
@@ -423,13 +486,13 @@ export default function ReviewQueue() {
                         <Button 
                           variant="outline"
                           className="flex-1"
-                          onClick={() => startEditing(receipt)}
+                          onClick={(e) => { e.stopPropagation(); startEditing(receipt); }}
                         >
                           Edit Data
                         </Button>
                         <Button 
                           className="flex-1 bg-green-600 text-white hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 dark:text-white"
-                          onClick={() => handleApprove(receipt.id)}
+                          onClick={(e) => { e.stopPropagation(); handleApprove(receipt.id); }}
                           disabled={processingId === receipt.id}
                         >
                           {processingId === receipt.id ? (
@@ -440,7 +503,7 @@ export default function ReviewQueue() {
                           Approve
                         </Button>
                       </div>
-                    </>
+                    </div>
                   )}
                 </div>
               </Card>
@@ -451,58 +514,43 @@ export default function ReviewQueue() {
 
       {/* Floating Action Bar for Bulk Select */}
       {selectedIds.length > 0 && (
-        <div className="fixed bottom-20 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 bg-zinc-900 dark:bg-zinc-100 shadow-2xl rounded-2xl px-4 py-3 z-50 flex items-center justify-between gap-6 min-w-max border border-zinc-800 dark:border-zinc-200 animate-in slide-in-from-bottom-5">
-          <span className="text-sm font-medium text-zinc-50 dark:text-zinc-900 whitespace-nowrap">
-            {selectedIds.length} item{selectedIds.length > 1 ? 's' : ''} selected
+        <div className="fixed bottom-20 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 bg-zinc-900 dark:bg-zinc-100 shadow-2xl rounded-2xl px-4 py-3 z-50 flex items-center justify-between gap-4 min-w-max border border-zinc-800 dark:border-zinc-200 animate-in slide-in-from-bottom-5">
+          <span className="text-sm font-medium text-zinc-50 dark:text-zinc-900 whitespace-nowrap hidden sm:inline-block">
+            {selectedIds.length} selected
           </span>
-          <Button 
-            onClick={handleBulkApprove}
-            disabled={isBulkProcessing}
-            size="sm"
-            className="bg-white text-zinc-900 hover:bg-zinc-200 dark:bg-zinc-900 dark:text-zinc-50 dark:hover:bg-zinc-800 font-semibold"
-          >
-            {isBulkProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-            Approve Selected
-          </Button>
+          <div className="flex gap-2 w-full sm:w-auto justify-between sm:justify-start">
+            <Button 
+              onClick={handleBulkApprove}
+              disabled={isBulkProcessing}
+              size="sm"
+              className="bg-green-600 text-white hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 font-semibold flex-1 sm:flex-none"
+            >
+              {isBulkProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              Approve
+            </Button>
+            <Button 
+              onClick={handleBulkReject}
+              disabled={isBulkProcessing}
+              size="sm"
+              variant="secondary"
+              className="font-semibold flex-1 sm:flex-none"
+            >
+              Reject
+            </Button>
+            <Button 
+              onClick={handleBulkDelete}
+              disabled={isBulkProcessing}
+              size="sm"
+              variant="destructive"
+              className="font-semibold flex-1 sm:flex-none"
+            >
+              Delete
+            </Button>
+          </div>
         </div>
       )}
 
-      {/* Mobile-First Bottom Navigation */}
-      <nav className="fixed bottom-0 w-full bg-white dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800 flex justify-around items-center h-16 pb-safe z-20">
-        <button 
-          onClick={() => navigate('/')}
-          className="flex flex-col items-center gap-1 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
-        >
-          <LayoutDashboard className="h-6 w-6" />
-          <span className="text-[11px] font-medium">Home</span>
-        </button>
-        <button 
-          onClick={() => navigate('/review')}
-          className="flex flex-col items-center gap-1 text-zinc-900 dark:text-zinc-50"
-        >
-          <Inbox className="h-6 w-6" />
-          <span className="text-[11px] font-medium">Review</span>
-        </button>
-        
-        {/* Floating Quick Add Button */}
-        <div className="relative -top-6">
-          <Button 
-            onClick={() => navigate('/capture')}
-            size="icon"
-            className="h-14 w-14 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform"
-          >
-            <PlusCircle className="h-6 w-6" />
-          </Button>
-        </div>
 
-        <button 
-          onClick={() => navigate('/history')}
-          className="flex flex-col items-center gap-1 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
-        >
-          <History className="h-6 w-6" />
-          <span className="text-[11px] font-medium">History</span>
-        </button>
-      </nav>
     </div>
   );
 }

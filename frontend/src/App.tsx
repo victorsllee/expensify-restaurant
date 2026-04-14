@@ -8,6 +8,8 @@ import ReviewQueue from './pages/ReviewQueue';
 import HistoryPage from './pages/History';
 import Settings from './pages/Settings';
 
+import MainLayout from './components/MainLayout';
+
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { currentUser } = useAuth();
   if (!currentUser) return <Navigate to="/login" />;
@@ -19,11 +21,13 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={currentUser ? <Navigate to="/" /> : <Login />} />
-      <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-      <Route path="/capture" element={<ProtectedRoute><Capture /></ProtectedRoute>} />
-      <Route path="/review" element={<ProtectedRoute><ReviewQueue /></ProtectedRoute>} />
-      <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
-      <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+      <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/capture" element={<Capture />} />
+        <Route path="/review" element={<ReviewQueue />} />
+        <Route path="/history" element={<HistoryPage />} />
+        <Route path="/settings" element={<Settings />} />
+      </Route>
     </Routes>
   );
 }

@@ -1,3 +1,4 @@
+from typing import List
 import os
 import requests
 import json
@@ -17,6 +18,28 @@ def get_zoho_access_token(refresh_token: str) -> str:
     response = requests.post(url, data=data)
     response.raise_for_status()
     return response.json().get("access_token")
+
+_zoho_currencies_cache = None
+
+def get_zoho_currencies(access_token: str) -> List[dict]:
+    """Fetches the list of currencies from Zoho and caches it."""
+    global _zoho_currencies_cache
+    if _zoho_currencies_cache is not None:
+        return _zoho_currencies_cache
+
+    print("[ZOHO SYNC] Fetching available currencies from Zoho...")
+    url = "https://www.zohoapis.com/expense/v1/settings/currencies"
+    headers = {"Authorization": f"Zoho-oauthtoken {access_token}"}
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        _zoho_currencies_cache = response.json().get("currencies", [])
+        print(f"[ZOHO SYNC] Found {len(_zoho_currencies_cache)} currencies.")
+        return _zoho_currencies_cache
+    except Exception as e:
+        print(f"[ZOHO SYNC] Error fetching currencies: {e}")
+        return []
+
 
 from app.database import SessionLocal
 from app.models import models
@@ -43,13 +66,28 @@ def push_receipt_to_zoho(receipt_id: int, user_id: str):
     
         access_token = get_zoho_access_token(user_settings.zoho_refresh_token)
         
+        # Get currency ID from Zoho
+        currencies = get_zoho_currencies(access_token)
+        currency_id = None
+        target_currency = receipt.currency or "USD"
+        for c in currencies:
+            if c['currency_code'] == target_currency:
+                currency_id = c['currency_id']
+                break
+        
+        if not currency_id:
+            print(f"[ZOHO SYNC] Currency code '{target_currency}' not found in Zoho account.")
+            receipt.error_message = f"Zoho Sync Failed: Currency '{target_currency}' is not enabled in your Zoho Expense account."
+            db.commit()
+            return
+
         # Zoho Expense API typically expects a specific payload format for expenses
         # Ref: https://www.zoho.com/expense/api/v1/expenses/#create-an-expense
         expense_data = {
             "date": receipt.date.strftime("%Y-%m-%d") if receipt.date else "",
             "amount": receipt.total_amount or 0.0,
             "merchant_name": vendor.name if vendor else "Unknown",
-            "currency_code": "USD", # Default fallback, ideally mapped from receipt.currency
+            "currency_id": currency_id,
             "tax_amount": receipt.tax_amount or 0.0,
         }
         
@@ -76,7 +114,7 @@ def push_receipt_to_zoho(receipt_id: int, user_id: str):
             "JSONString": json.dumps(expense_data)
         }
         
-        response = requests.post("https://expense.zoho.com/api/v1/expenses", data=payload, headers={"Authorization": f"Zoho-oauthtoken {access_token}"})
+        response = requests.post("https://www.zohoapis.com/expense/v1/expenses", data=payload, headers={"Authorization": f"Zoho-oauthtoken {access_token}"})
         
         if response.ok:
             data = response.json()

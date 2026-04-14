@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Search, Calendar, FileText, Filter, CheckCircle, Clock, Loader2, LayoutDashboard, Inbox, PlusCircle, History, ChevronDown, ChevronUp, Cloud, CloudOff, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Search, Calendar, FileText, Filter, CheckCircle, Clock, Loader2, LayoutDashboard, Inbox, PlusCircle, History, ChevronDown, ChevronUp, Cloud, AlertCircle, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import { Button } from '@/components/ui/button';
@@ -114,6 +114,27 @@ export default function HistoryPage() {
     } catch (err: any) {
       alert("Failed to update receipt: " + (err.response?.data?.detail || err.message));
     } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const handleResync = async (id: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      setProcessingId(id);
+      await api.post(`/zoho/resync/${id}`);
+      // Optimistically update the UI to show it's processing
+      setReceipts(prev => prev.map(r => 
+        r.id === id ? { ...r, error_message: null, status: 'PROCESSING' } : r
+      ));
+      // Re-fetch after a delay to get the final status.
+      // Stop showing spinner after 5 seconds regardless of outcome.
+      setTimeout(() => {
+        fetchHistory();
+        setProcessingId(null);
+      }, 5000); 
+    } catch (err: any) {
+      alert("Failed to trigger re-sync: " + (err.response?.data?.detail || err.message));
       setProcessingId(null);
     }
   };
@@ -238,7 +259,7 @@ export default function HistoryPage() {
 
                     <div className="text-right flex flex-col items-end">
                       <p className="text-sm font-bold text-zinc-900 dark:text-zinc-50">
-                        {receipt.currency}{receipt.total_amount?.toFixed(2)}
+                        {receipt.currency}{new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(receipt.total_amount || 0)}
                       </p>
                       <div className="flex flex-col items-end gap-1 mt-1">
                         {receipt.status === 'APPROVED' ? (
@@ -267,6 +288,13 @@ export default function HistoryPage() {
                             <AlertCircle size={10} className="mr-1" /> Sync Failed
                           </span>
                         ) : null}
+
+                        {receipt.error_message?.toLowerCase().includes("zoho") && (
+                          <button onClick={(e) => handleResync(receipt.id, e)} disabled={processingId === receipt.id} className="flex items-center text-[10px] font-medium text-blue-600 dark:text-blue-400 hover:underline disabled:opacity-50">
+                            <RefreshCw size={10} className={`mr-1 ${processingId === receipt.id ? 'animate-spin' : ''}`} />
+                            Retry
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -458,7 +486,7 @@ export default function HistoryPage() {
                                         )}
                                         <span className="text-zinc-700 dark:text-zinc-300 truncate">{item.description}</span>
                                       </div>
-                                      <span className="text-zinc-900 dark:text-zinc-50 font-medium shrink-0">{receipt.currency}{item.amount?.toFixed(2)}</span>
+                                      <span className="text-zinc-900 dark:text-zinc-50 font-medium shrink-0">{receipt.currency}{new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(item.amount || 0)}</span>
                                     </li>
                                   ))}
                                   {(!receipt.line_items || receipt.line_items.length === 0) && (
@@ -531,7 +559,7 @@ export default function HistoryPage() {
                     
                     <div className="text-right shrink-0">
                     <p className="text-sm font-bold text-zinc-900 dark:text-zinc-50">
-                      {li.currency || "$"}{li.amount?.toFixed(2)}
+                      {li.currency || "$"}{new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(li.amount || 0)}
                     </p>
                     </div>
                   </li>
@@ -541,42 +569,7 @@ export default function HistoryPage() {
         )}
       </main>
 
-      {/* Mobile-First Bottom Navigation */}
-      <nav className="fixed bottom-0 w-full bg-white dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800 flex justify-around items-center h-16 pb-safe z-20">
-        <button 
-          onClick={() => navigate('/')}
-          className="flex flex-col items-center gap-1 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
-        >
-          <LayoutDashboard className="h-6 w-6" />
-          <span className="text-[11px] font-medium">Home</span>
-        </button>
-        <button 
-          onClick={() => navigate('/review')}
-          className="flex flex-col items-center gap-1 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
-        >
-          <Inbox className="h-6 w-6" />
-          <span className="text-[11px] font-medium">Review</span>
-        </button>
-        
-        {/* Floating Quick Add Button */}
-        <div className="relative -top-6">
-          <Button 
-            onClick={() => navigate('/capture')}
-            size="icon"
-            className="h-14 w-14 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform"
-          >
-            <PlusCircle className="h-6 w-6" />
-          </Button>
-        </div>
 
-        <button 
-          onClick={() => navigate('/history')}
-          className="flex flex-col items-center gap-1 text-zinc-900 dark:text-zinc-50"
-        >
-          <History className="h-6 w-6" />
-          <span className="text-[11px] font-medium">History</span>
-        </button>
-      </nav>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
 from sqlalchemy.orm import Session
 import os
 import requests
@@ -86,3 +86,34 @@ def disconnect_zoho(user: dict = Depends(verify_token), db: Session = Depends(ge
         db.commit()
         
     return {"status": "success", "message": "Zoho disconnected"}
+
+@router.post("/resync/{receipt_id}")
+def resync_receipt_to_zoho(
+    receipt_id: int,
+    background_tasks: BackgroundTasks,
+    user: dict = Depends(verify_token),
+    db: Session = Depends(get_db)
+):
+    """Manually re-triggers the Zoho sync for a specific receipt."""
+    receipt = db.query(models.Receipt).filter(
+        models.Receipt.id == receipt_id,
+        models.Receipt.user_id == user['uid']
+    ).first()
+
+    if not receipt:
+        raise HTTPException(status_code=404, detail="Receipt not found")
+
+    if receipt.status != models.ReceiptStatus.APPROVED:
+        raise HTTPException(status_code=400, detail="Only approved receipts can be synced.")
+
+    # Reset sync-related errors before retrying
+    receipt.error_message = None
+    receipt.zoho_expense_id = None
+    db.commit()
+
+    # Use the same background task as the automatic sync
+    from app.services.zoho import push_receipt_to_zoho
+    background_tasks.add_task(push_receipt_to_zoho, receipt.id, user['uid'])
+
+    return {"status": "success", "message": "Re-sync triggered successfully."}
+

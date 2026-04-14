@@ -71,6 +71,32 @@ def create_category(category: CategoryCreate, user: dict = Depends(verify_token)
     db.refresh(new_cat)
     return new_cat
 
+@router.put("/{category_id}", response_model=CategoryResponse)
+def update_category(category_id: int, category_data: CategoryCreate, user: dict = Depends(verify_token), db: Session = Depends(get_db)):
+    category = db.query(models.Category).filter(
+        models.Category.id == category_id,
+        models.Category.user_id == user['uid']
+    ).first()
+    
+    if not category:
+        raise HTTPException(status_code=404, detail="Category not found")
+        
+    # Check if another category with the new name already exists
+    if category_data.name.lower() != category.name.lower():
+        existing = db.query(models.Category).filter(
+            models.Category.user_id == user['uid'],
+            models.Category.name.ilike(category_data.name),
+            models.Category.id != category_id
+        ).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="Another category with this name already exists")
+    
+    category.name = category_data.name
+    category.color_code = category_data.color_code
+    db.commit()
+    db.refresh(category)
+    return category
+
 @router.delete("/{category_id}")
 def delete_category(category_id: int, user: dict = Depends(verify_token), db: Session = Depends(get_db)):
     category = db.query(models.Category).filter(
