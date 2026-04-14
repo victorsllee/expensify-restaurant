@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Search, Calendar, FileText, Filter, CheckCircle, Clock, Loader2, LayoutDashboard, Inbox, PlusCircle, History, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, Search, Calendar, FileText, Filter, CheckCircle, Clock, Loader2, LayoutDashboard, Inbox, PlusCircle, History, ChevronDown, ChevronUp, Cloud, CloudOff, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import { Button } from '@/components/ui/button';
@@ -240,15 +240,26 @@ export default function HistoryPage() {
                       <p className="text-sm font-bold text-zinc-900 dark:text-zinc-50">
                         {receipt.currency}{receipt.total_amount?.toFixed(2)}
                       </p>
-                      {receipt.status === 'APPROVED' ? (
-                        <span className="flex items-center text-[10px] font-medium text-zinc-600 dark:text-zinc-400 mt-1">
-                          <CheckCircle size={10} className="mr-1" /> Approved
-                        </span>
-                      ) : (
-                        <span className="flex items-center text-[10px] font-medium text-zinc-500 dark:text-zinc-400 mt-1">
-                          <Clock size={10} className="mr-1" /> Pending
-                        </span>
-                      )}
+                      <div className="flex flex-col items-end gap-1 mt-1">
+                        {receipt.status === 'APPROVED' ? (
+                          <span className="flex items-center text-[10px] font-medium text-zinc-600 dark:text-zinc-400">
+                            <CheckCircle size={10} className="mr-1" /> Approved
+                          </span>
+                        ) : (
+                          <span className="flex items-center text-[10px] font-medium text-zinc-500 dark:text-zinc-400">
+                            <Clock size={10} className="mr-1" /> Pending
+                          </span>
+                        )}
+                        {receipt.zoho_expense_id ? (
+                          <span className="flex items-center text-[10px] font-medium text-blue-600 dark:text-blue-400" title={`Synced to Zoho (ID: ${receipt.zoho_expense_id})`}>
+                            <Cloud size={10} className="mr-1" /> Synced
+                          </span>
+                        ) : receipt.error_message?.toLowerCase().includes("zoho") ? (
+                          <span className="flex items-center text-[10px] font-medium text-red-600 dark:text-red-400" title={receipt.error_message}>
+                            <AlertCircle size={10} className="mr-1" /> Sync Failed
+                          </span>
+                        ) : null}
+                      </div>
                     </div>
                   </div>
 

@@ -54,6 +54,8 @@ def get_history(user: dict = Depends(verify_token), db: Session = Depends(get_db
             "date": r.date.strftime("%Y-%m-%d") if r.date else None,
             "status": r.status.value,
             "track_line_items": r.track_line_items,
+            "zoho_expense_id": r.zoho_expense_id,
+            "error_message": r.error_message,
             "main_category": main_category,
             "line_items": formatted_items
         })
