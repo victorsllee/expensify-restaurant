@@ -8,7 +8,7 @@ def test_gemini_api_key():
         # Initialize the new genai client directly with the API key
         # Note: Do not rely on GOOGLE_APPLICATION_CREDENTIALS for this method.
         # Ensure that GEMINI_API_KEY is read by the client.
-        client = genai.Client(api_key="AIzaSyBHmXZKwsbzlHeDnrGsLVyu-CEt9QvSqQw")
+        client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY", "YOUR_API_KEY"))
         
         # We can use gemini-1.5-flash for the fastest OCR/Text tasks
         response = client.models.generate_content(

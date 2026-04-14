@@ -10,10 +10,10 @@ from app.models import models
 
 router = APIRouter()
 
-ZOHO_CLIENT_ID = os.environ.get("ZOHO_CLIENT_ID", "")
-ZOHO_CLIENT_SECRET = os.environ.get("ZOHO_CLIENT_SECRET", "")
+ZOHO_CLIENT_ID = os.environ.get("ZOHO_CLIENT_ID", "").strip('\"\'')
+ZOHO_CLIENT_SECRET = os.environ.get("ZOHO_CLIENT_SECRET", "").strip('\"\'')
 # e.g., http://localhost:5173/settings
-ZOHO_REDIRECT_URI = os.environ.get("ZOHO_REDIRECT_URI", "http://localhost:5173/settings")
+ZOHO_REDIRECT_URI = os.environ.get("ZOHO_REDIRECT_URI", "http://localhost:5173/settings").strip('\"\'')
 
 # Scope required for Zoho Expense
 ZOHO_SCOPE = "ZohoExpense.receipts.CREATE,ZohoExpense.receipts.READ,ZohoExpense.receipts.UPDATE,ZohoExpense.receipts.DELETE,ZohoExpense.settings.READ"
