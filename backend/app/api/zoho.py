@@ -16,7 +16,7 @@ ZOHO_CLIENT_SECRET = os.environ.get("ZOHO_CLIENT_SECRET", "").strip('\"\'')
 ZOHO_REDIRECT_URI = os.environ.get("ZOHO_REDIRECT_URI", "http://localhost:5173/settings").strip('\"\'')
 
 # Scope required for Zoho Expense
-ZOHO_SCOPE = "ZohoExpense.receipts.CREATE,ZohoExpense.receipts.READ,ZohoExpense.receipts.UPDATE,ZohoExpense.receipts.DELETE,ZohoExpense.settings.READ"
+ZOHO_SCOPE = "ZohoExpense.fullaccess.all"
 
 @router.get("/auth-url")
 def get_zoho_auth_url():
