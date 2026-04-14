@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { auth } from '../lib/firebase';
-import { LogOut, PlusCircle, Inbox, LayoutDashboard, History, Loader2, Sparkles, X, Settings } from 'lucide-react';
+import { LogOut, Inbox, History, Loader2, Sparkles, X, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatCurrency } from '../lib/utils';
 
 export default function Dashboard() {
   const { currentUser } = useAuth();
@@ -80,116 +81,137 @@ export default function Dashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* Quick Stats */}
-        <div className="grid grid-cols-2 gap-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-zinc-500">Total Spend</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{defaultCurrency}{totalSpend.toFixed(2)}</div>
-            </CardContent>
-          </Card>
-          
-          <Card 
-            className="cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
-            onClick={() => navigate('/review')}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-zinc-500">Pending Review</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold ${pendingCount > 0 ? 'text-amber-600 dark:text-amber-500' : ''}`}>
-                {pendingCount > 0 ? `${pendingCount} items →` : 'All clear ✓'}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* AI Query Interface */}
-        <Card className="bg-zinc-100/50 dark:bg-zinc-900/20">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2 font-semibold">
-              <Sparkles className="h-4 w-4 text-zinc-900 dark:text-zinc-50" />
-              Ask AI about your expenses
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex gap-2">
-              <Input 
-                placeholder="e.g. 'What is my total spend grouped by vendor?'" 
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleAskAI()}
-                className="bg-white dark:bg-zinc-950"
-              />
-              <Button onClick={handleAskAI} disabled={isQuerying || !query.trim()}>
-                {isQuerying ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Ask'}
-              </Button>
-            </div>
-
-            {/* Query Results Area */}
-            {queryError && (
-              <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md border border-destructive/20">
-                {queryError}
-              </div>
-            )}
-
-            {queryResult && (
-              <Card className="relative overflow-hidden mt-4 shadow-none">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="absolute right-2 top-2 h-6 w-6 rounded-full"
-                  onClick={() => setQueryResult(null)}
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-                
-                <div className="py-3 px-4 bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Result</h4>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Stats Column */}
+          <div className="lg:col-span-1 space-y-6">
+            <Card className="bg-white dark:bg-zinc-900 border-none shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-800">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-zinc-500 uppercase tracking-wider">Total Spend</CardTitle>
+                <div className="h-8 w-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                   <History className="h-4 w-4 text-zinc-600 dark:text-zinc-400" />
                 </div>
-                
-                {queryResult.data && queryResult.data.length > 0 ? (
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          {Object.keys(queryResult.data[0]).map((key) => (
-                            <TableHead key={key}>{key.replace('_', ' ')}</TableHead>
-                          ))}
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {queryResult.data.map((row: any, i: number) => (
-                          <TableRow key={i}>
-                            {Object.values(row).map((val: any, j: number) => (
-                              <TableCell key={j}>
-                                {typeof val === 'number' ? (val % 1 !== 0 ? val.toFixed(2) : val) : String(val)}
-                              </TableCell>
-                            ))}
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                ) : (
-                  <div className="p-6">
-                    <p className="text-sm text-zinc-500 italic text-center">No data returned for this query.</p>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-black text-zinc-900 dark:text-zinc-50">
+                  {defaultCurrency}{formatCurrency(totalSpend, defaultCurrency)}
+                </div>
+                <p className="text-xs text-zinc-500 mt-1">Across all approved receipts</p>
+              </CardContent>
+            </Card>
+            
+            <Card 
+              className="cursor-pointer bg-white dark:bg-zinc-900 border-none shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-800 hover:ring-zinc-400 dark:hover:ring-zinc-600 transition-all group"
+              onClick={() => navigate('/review')}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-zinc-500 uppercase tracking-wider">Pending Review</CardTitle>
+                <div className="h-8 w-8 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                   <Inbox className="h-4 w-4 text-amber-600 dark:text-amber-500" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className={`text-3xl font-black ${pendingCount > 0 ? 'text-amber-600 dark:text-amber-500' : 'text-zinc-900 dark:text-zinc-50'}`}>
+                  {pendingCount > 0 ? pendingCount : '0'}
+                </div>
+                <p className="text-xs text-zinc-500 mt-1 flex items-center gap-1">
+                  {pendingCount > 0 ? (
+                    <>Needs your attention <ArrowLeft className="h-3 w-3 rotate-180 group-hover:translate-x-1 transition-transform" /></>
+                  ) : 'All receipts processed'}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* AI Column */}
+          <div className="lg:col-span-2">
+            <Card className="h-full bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-900 border-none shadow-xl overflow-hidden relative">
+              {/* Background Glow */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-zinc-800 dark:bg-zinc-200 rounded-full -mr-32 -mt-32 blur-3xl opacity-50" />
+              
+              <CardHeader className="pb-3 relative z-10">
+                <CardTitle className="text-lg flex items-center gap-2 font-bold">
+                  <Sparkles className="h-5 w-5 text-zinc-400 dark:text-zinc-500" />
+                  Ask AI Intelligence
+                </CardTitle>
+                <p className="text-sm text-zinc-400 dark:text-zinc-500">Query your expenses using natural language.</p>
+              </CardHeader>
+              <CardContent className="space-y-4 relative z-10">
+                <div className="flex gap-2 p-1.5 bg-zinc-800 dark:bg-zinc-200 rounded-xl">
+                  <Input 
+                    placeholder="e.g. 'How much did I spend at Kim Yen last month?'" 
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleAskAI()}
+                    className="bg-transparent border-none text-zinc-50 dark:text-zinc-900 placeholder:text-zinc-500 focus-visible:ring-0 h-11"
+                  />
+                  <Button 
+                    onClick={handleAskAI} 
+                    disabled={isQuerying || !query.trim()}
+                    className="bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-lg px-6"
+                  >
+                    {isQuerying ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Ask'}
+                  </Button>
+                </div>
+
+                {/* Query Results Area */}
+                {queryError && (
+                  <div className="p-4 text-sm text-red-200 bg-red-900/50 rounded-xl border border-red-800/50">
+                    {queryError}
                   </div>
                 )}
-                
-                <div className="p-3 bg-zinc-50 dark:bg-zinc-900/50 border-t border-zinc-200 dark:border-zinc-800 text-[11px] font-mono text-zinc-500 break-all">
-                  Generated SQL: {queryResult.query_used}
-                </div>
-              </Card>
-            )}
-          </CardContent>
-        </Card>
+
+                {queryResult && (
+                  <Card className="relative overflow-hidden mt-4 shadow-2xl border-none bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 animate-in zoom-in-95 duration-200">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="absolute right-2 top-2 h-7 w-7 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                      onClick={() => setQueryResult(null)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                    
+                    <div className="py-3 px-4 bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+                      <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Query Result</h4>
+                      <div className="text-[10px] text-zinc-400 font-mono">SQL GENERATED</div>
+                    </div>
+                    
+                    {queryResult.data && queryResult.data.length > 0 ? (
+                      <div className="max-h-[300px] overflow-auto">
+                        <Table>
+                          <TableHeader className="bg-zinc-50/50 dark:bg-zinc-900/50 sticky top-0 backdrop-blur-sm z-10">
+                            <TableRow>
+                              {Object.keys(queryResult.data[0]).map((key) => (
+                                <TableHead key={key} className="text-[10px] font-bold h-9 uppercase tracking-wider">{key.replace('_', ' ')}</TableHead>
+                              ))}
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {queryResult.data.map((row: any, i: number) => (
+                              <TableRow key={i} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50">
+                                {Object.values(row).map((val: any, j: number) => (
+                                  <TableCell key={j} className="text-sm py-3 font-medium">
+                                    {typeof val === 'number' ? (val % 1 !== 0 ? val.toFixed(2) : val) : String(val)}
+                                  </TableCell>
+                                ))}
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    ) : (
+                      <div className="p-8 text-center">
+                        <p className="text-sm text-zinc-500 italic">No data matched your criteria.</p>
+                      </div>
+                    )}
+                  </Card>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </main>
-
-
     </div>
   );
 }

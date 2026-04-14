@@ -4,13 +4,16 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from google import genai
 import json
+import os
 
 from app.api.auth import verify_token
 from app.database import get_db
 
 router = APIRouter()
 
-gemini_client = genai.Client(api_key="AIzaSyBHmXZKwsbzlHeDnrGsLVyu-CEt9QvSqQw")
+# Initialize Gemini Client globally
+gemini_api_key = os.environ.get("GEMINI_API_KEY")
+gemini_client = genai.Client(api_key=gemini_api_key) if gemini_api_key else None
 
 class QueryRequest(BaseModel):
     query: str
@@ -44,12 +47,12 @@ Table: line_items
 Return ONLY a JSON object containing the SQL query. Do not use markdown blocks. Use double quotes for keys.
 Example output format:
 {
-    "sql": "SELECT v.name, SUM(r.total_amount) as total FROM receipts r JOIN vendors v ON r.vendor_id = v.id WHERE r.user_id = '{uid}' AND r.date >= date('now', '-30 days') GROUP BY v.name ORDER BY total DESC LIMIT 5"
+    "sql": "SELECT v.name, SUM(r.total_amount) as total FROM receipts r JOIN vendors v ON r.vendor_id = v.id WHERE r.user_id = '{uid}' AND r.date >= CURRENT_DATE - INTERVAL '30 days' GROUP BY v.name ORDER BY total DESC LIMIT 5"
 }
 
 IMPORTANT RULES:
 - You MUST ensure the query is scoped to the specific user by ALWAYS including `user_id = '{uid}'` in your WHERE clauses for `receipts` and/or `vendors`. (The python code will replace {uid} with the actual ID).
-- Since we are currently using SQLite, use SQLite syntax for date math (e.g. `date('now', '-1 month')` instead of `NOW() - INTERVAL '1 month'`).
+- Use PostgreSQL syntax for date math (e.g. `CURRENT_DATE - INTERVAL '1 month'` or `date_trunc('month', date)`).
 """
 
 @router.post("/query")
@@ -58,6 +61,8 @@ def process_natural_language_query(
     user: dict = Depends(verify_token),
     db: Session = Depends(get_db)
 ):
+    if not gemini_client:
+        raise HTTPException(status_code=500, detail="Gemini API key is missing or invalid.")
     try:
         # 1. Ask Gemini to generate the SQL
         response = gemini_client.models.generate_content(

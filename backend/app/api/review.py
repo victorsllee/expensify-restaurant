@@ -9,6 +9,7 @@ from app.api.auth import verify_token
 from app.database import get_db
 from app.models import models
 from app.services.zoho import push_receipt_to_zoho
+from app.services.learning import learn_from_receipt
 
 router = APIRouter()
 
@@ -46,6 +47,9 @@ def handle_single_approval(receipt_id: int, user_id: str, db: Session, bg_tasks:
     user_settings = db.query(models.UserSettings).filter(models.UserSettings.user_id == user_id).first()
     if user_settings and user_settings.zoho_integration_enabled:
         bg_tasks.add_task(push_receipt_to_zoho, receipt.id, user_id)
+    
+    # Trigger AI Learning
+    bg_tasks.add_task(learn_from_receipt, receipt.id, user_id)
 
 def handle_single_rejection(receipt_id: int, user_id: str, db: Session):
     receipt = db.query(models.Receipt).filter(

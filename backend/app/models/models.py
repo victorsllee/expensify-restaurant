@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Enum, Boolean
+from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Enum, Boolean, UniqueConstraint
 from sqlalchemy.orm import relationship
 from datetime import datetime
 import enum
@@ -76,3 +76,18 @@ class LineItem(Base):
 
     receipt = relationship("Receipt", back_populates="line_items")
     category = relationship("Category", back_populates="line_items")
+
+class CategoryLearning(Base):
+    __tablename__ = 'category_learnings'
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(String, nullable=False, index=True)
+    keyword = Column(String, nullable=False, index=True)
+    category_id = Column(Integer, ForeignKey('categories.id'), nullable=False)
+    frequency = Column(Integer, default=1)
+    
+    category = relationship("Category")
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'keyword', 'category_id', name='_user_keyword_category_uc'),
+    )
+

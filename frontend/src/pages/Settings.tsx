@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Loader2, Trash2, Plus, Users, Tags, Link2, Unlink, Check, X } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Loader2, Trash2, Plus, Users, Tags, Link2, Unlink, Check, X } from 'lucide-react';
 import api from '../lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +9,6 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Settings() {
-  const navigate = useNavigate();
   const [categories, setCategories] = useState<any[]>([]);
   const [vendors, setVendors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

@@ -1,12 +1,11 @@
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { LayoutDashboard, Inbox, History, Settings, LogOut, Receipt } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { auth } from '../lib/firebase';
 import { Button } from './ui/button';
 
 export default function SideNav() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout } = useAuth();
 
   const navItems = [
     { path: '/', label: 'Home', icon: LayoutDashboard },
@@ -19,7 +18,7 @@ export default function SideNav() {
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await auth.signOut();
       navigate('/login');
     } catch (error) {
       console.error("Failed to log out", error);

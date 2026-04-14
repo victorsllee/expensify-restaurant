@@ -63,7 +63,7 @@ def process_receipt_async(receipt_id: int, image_bytes: bytes, mime_type: str, u
         if not receipt:
             return
 
-        # 1. Fetch Context (Categories, Vendors, Past Items)
+        # 1. Fetch Context (Categories, Vendors, Learned Memory)
         from app.api.categories import DEFAULT_CATEGORIES
         categories = db.query(models.Category).filter(models.Category.user_id == user_id).all()
         if not categories:
@@ -77,25 +77,28 @@ def process_receipt_async(receipt_id: int, image_bytes: bytes, mime_type: str, u
         vendors = db.query(models.Vendor).filter(models.Vendor.user_id == user_id).all()
         vendor_names = [v.name for v in vendors]
         
-        # Get last 200 line items
-        past_items = db.query(models.LineItem).join(models.Receipt).filter(
-            models.Receipt.user_id == user_id, 
-            models.LineItem.category_id != None
-        ).order_by(models.LineItem.id.desc()).limit(200).all()
+        # Get learned mappings from memory (top frequency)
+        learnings = db.query(models.CategoryLearning).filter(
+            models.CategoryLearning.user_id == user_id
+        ).order_by(models.CategoryLearning.frequency.desc()).limit(100).all()
         
-        past_mapping = {}
-        for item in past_items:
-            if item.description not in past_mapping and item.category:
-                past_mapping[item.description] = item.category.name
+        learned_hints = {}
+        for l in learnings:
+            if l.keyword not in learned_hints:
+                learned_hints[l.keyword] = l.category.name
 
         context_prompt = f"""
 You are an expert OCR AI specifically trained to extract data from restaurant receipts and invoices.
 Analyze the provided image and extract the information into a strictly formatted JSON object.
 
-CONTEXT TO HELP YOU:
-- Existing Vendors: {json.dumps(vendor_names)} (If the extracted vendor is a slight typo/variation of these, use the existing one to avoid duplicates).
-- Available Categories: {json.dumps(category_names)} (You MUST map every line item to one of these exact categories, or null if absolutely unsure).
-- Past Item Categorizations: {json.dumps(past_mapping)} (Use this as your primary source of truth for categorizing similar line items).
+CRITICAL CONTEXT & RULES:
+1. PREDEFINED CATEGORIES: {json.dumps(category_names)}
+   - You MUST map every line item to one of these EXACT strings.
+   - Do NOT invent new categories.
+2. EXISTING VENDORS: {json.dumps(vendor_names)}
+   - If the receipt vendor is a variation or typo of one of these, use the EXACT name from this list.
+3. LEARNED BEHAVIOR (HINTS): {json.dumps(learned_hints)}
+   - If a line item description contains one of these keywords, prioritize the associated category.
 
 Extract:
 1. "date": The date of the receipt (YYYY-MM-DD format). If not found, output null.
@@ -106,27 +109,10 @@ Extract:
 6. "line_items": A list of objects, each containing:
    - "description": The name of the item.
    - "amount": The price of the item (float).
-   - "category": The exact string name of the category from the Available Categories list (or null).
+   - "category": The exact string name from the PREDEFINED CATEGORIES list above (or null).
 7. "confidence": A score between 0.0 and 1.0.
 
-Important Rules:
-- Return ONLY valid JSON.
-- Do NOT wrap the output in markdown code blocks.
-- All amounts should be numbers, not strings.
-
-Expected JSON schema:
-{{
-  "date": "2023-10-27",
-  "vendor": "Sysco",
-  "total_amount": 150.50,
-  "tax_amount": 10.50,
-  "currency": "$",
-  "line_items": [
-    {{"description": "Chicken Breast", "amount": 50.00, "category": "Meat"}},
-    {{"description": "Tomatoes", "amount": 25.00, "category": "Produce"}}
-  ],
-  "confidence": 0.95
-}}
+Important: Return ONLY valid JSON. No markdown. No commentary.
 """
 
         # Call Gemini for OCR extraction
@@ -143,7 +129,7 @@ Expected JSON schema:
                 )
             )
         except Exception as api_err:
-            print(f"Primary model failed ({api_err}). Retrying with gemini-2.0-flash...")
+            print(f"Primary model failed ({api_err}). Retrying with gemini-2.5-flash...")
             if gemini_client is None:
                 raise Exception("GEMINI_API_KEY is missing or invalid.")
             response = gemini_client.models.generate_content(

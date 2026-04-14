@@ -10,14 +10,13 @@ from app.models import models
 router = APIRouter()
 
 DEFAULT_CATEGORIES = [
-    {"name": "Meat", "color_code": "#EF4444"},
-    {"name": "Seafood", "color_code": "#3B82F6"},
-    {"name": "Produce", "color_code": "#10B981"},
+    {"name": "Fresh meat", "color_code": "#EF4444"},
+    {"name": "Frozen", "color_code": "#3B82F6"},
     {"name": "Dairy", "color_code": "#F59E0B"},
-    {"name": "Beverages", "color_code": "#8B5CF6"},
+    {"name": "Drinks", "color_code": "#8B5CF6"},
     {"name": "Rent", "color_code": "#6366F1"},
-    {"name": "Utilities", "color_code": "#14B8A6"},
-    {"name": "Supplies", "color_code": "#64748B"},
+    {"name": "Utilities", "color_code": "#10B981"},
+    {"name": "Supplies", "color_code": "#71717A"},
     {"name": "Maintenance", "color_code": "#F97316"}
 ]
 

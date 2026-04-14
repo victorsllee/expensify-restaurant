@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, CheckCircle, FileText, Loader2, Calendar, X, LayoutDashboard, Inbox, PlusCircle, History, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, CheckCircle, FileText, Loader2, Calendar, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format, parseISO } from "date-fns";
-import { cn } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 
 export default function ReviewQueue() {
   const navigate = useNavigate();
@@ -37,9 +37,7 @@ export default function ReviewQueue() {
         setSelectedIds([]);
       }
     };
-
     document.addEventListener('keydown', handleKeyDown);
-
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
@@ -237,7 +235,6 @@ export default function ReviewQueue() {
             
             {receipts.map((receipt) => (
               <Card key={receipt.id} className={`overflow-hidden flex flex-col md:flex-row shadow-sm transition-all border-2 ${selectedIds.includes(receipt.id) ? 'border-zinc-900 dark:border-zinc-50' : 'border-zinc-200 dark:border-zinc-800'}`}>
-                {/* Selection Overlay */}
                  <div className={`absolute top-4 left-4 z-10 hidden md:block transition-opacity ${selectedIds.length > 0 ? 'opacity-100' : 'opacity-0'}`}>
                    <Checkbox 
                       className="bg-white dark:bg-zinc-900 border-zinc-400 dark:border-zinc-500 w-5 h-5" 
@@ -246,7 +243,6 @@ export default function ReviewQueue() {
                    />
                 </div>
 
-                {/* Image Section - Fixed width on md+ screens */}
                 <div 
                   className="w-full md:w-64 md:shrink-0 bg-zinc-100 dark:bg-zinc-900 border-b md:border-b-0 md:border-r border-zinc-200 dark:border-zinc-800 aspect-video md:aspect-auto flex items-center justify-center overflow-hidden relative cursor-pointer group"
                   onClick={() => toggleSelection(receipt.id)}
@@ -258,7 +254,6 @@ export default function ReviewQueue() {
                        onCheckedChange={() => toggleSelection(receipt.id)} 
                     />
                   </div>
-                  {/* Dark overlay on hover for image to indicate it's selectable */}
                   <div className={`absolute inset-0 bg-black/10 dark:bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity ${selectedIds.includes(receipt.id) ? 'opacity-10' : ''}`} />
                   {receipt.image_url ? (
                     isPdf(receipt.image_url) ? (
@@ -271,10 +266,8 @@ export default function ReviewQueue() {
                   )}
                 </div>
 
-                {/* Data Section */}
                 <div className="p-5 flex-1 flex flex-col min-w-0">
                   {editingId === receipt.id ? (
-                    /* Edit Mode */
                     <div className="space-y-4 mb-4">
                       <div className="flex justify-between items-center mb-2">
                         <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">Edit Receipt Data</h3>
@@ -293,17 +286,11 @@ export default function ReviewQueue() {
                           <div className="space-y-1.5">
                             <Label>Date</Label>
                             <Popover>
-                              <PopoverTrigger asChild>
-                                <Button
-                                  variant={"outline"}
-                                  className={cn(
-                                    "w-full justify-start text-left font-normal",
-                                    !editForm.date && "text-muted-foreground"
-                                  )}
-                                >
-                                  <Calendar className="mr-2 h-4 w-4" />
-                                  {editForm.date ? format(parseISO(editForm.date), "PPP") : <span>Pick a date</span>}
-                                </Button>
+                              <PopoverTrigger>
+                                <div className="w-full flex items-center px-3 h-9 rounded-md border border-zinc-200 dark:border-zinc-700 text-sm cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800">
+                                  <Calendar className="mr-2 h-4 w-4 text-zinc-400" />
+                                  {editForm.date ? format(parseISO(editForm.date), "PPP") : <span className="text-muted-foreground">Pick a date</span>}
+                                </div>
                               </PopoverTrigger>
                               <PopoverContent className="w-auto p-0">
                                 <CalendarComponent
@@ -328,7 +315,6 @@ export default function ReviewQueue() {
                           </div>
                         </div>
 
-                        {/* Main Category Edit */}
                         <div className="space-y-1.5 sm:col-span-2 mt-2">
                           <Label>Main Category</Label>
                           <Select 
@@ -348,7 +334,6 @@ export default function ReviewQueue() {
                           </Select>
                         </div>
                       
-                      {/* Track Line Items Toggle */}
                       <div className="mt-6 flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md">
                         <div className="space-y-0.5">
                           <Label className="text-base">Save Line Items</Label>
@@ -364,7 +349,6 @@ export default function ReviewQueue() {
                         />
                       </div>
 
-                      {/* Line Items Edit (Only visible if tracking) */}
                       {editForm.track_line_items && (
                         <div className="mt-4 space-y-3">
                           <Label>Line Items Categorization</Label>
@@ -404,20 +388,14 @@ export default function ReviewQueue() {
                       )}
 
                       <div className="flex justify-end gap-2 mt-4">
-                        <Button variant="outline" onClick={cancelEditing}>
-                          Cancel
-                        </Button>
-                        <Button 
-                          onClick={() => saveEdit(receipt.id)}
-                          disabled={processingId === receipt.id}
-                        >
+                        <Button variant="outline" onClick={cancelEditing}>Cancel</Button>
+                        <Button onClick={() => saveEdit(receipt.id)} disabled={processingId === receipt.id}>
                           {processingId === receipt.id && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                           Save Changes
                         </Button>
                       </div>
                     </div>
                   ) : (
-                    /* Display Mode */
                     <div className="flex flex-col flex-1 h-full cursor-pointer" onClick={() => toggleSelection(receipt.id)}>
                       <div className="flex justify-between items-start mb-4">
                         <div className="flex-1 min-w-0 pr-4">
@@ -436,11 +414,11 @@ export default function ReviewQueue() {
                         </div>
                         <div className="text-right shrink-0">
                           <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
-                            {receipt.currency}{new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(receipt.total_amount || 0)}
+                            {receipt.currency}{formatCurrency(receipt.total_amount || 0, receipt.currency)}
                           </p>
                           {receipt.tax_amount > 0 && (
                             <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                              includes {receipt.currency}{new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(receipt.tax_amount || 0)} tax
+                              includes {receipt.currency}{formatCurrency(receipt.tax_amount || 0, receipt.currency)} tax
                             </p>
                           )}
                         </div>
@@ -472,34 +450,21 @@ export default function ReviewQueue() {
                                   )}
                                   <span className="text-zinc-700 dark:text-zinc-300 truncate">{item.description}</span>
                                 </div>
-                                <span className="text-zinc-900 dark:text-zinc-50 font-medium shrink-0">{receipt.currency}{new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(item.amount || 0)}</span>
+                                <span className="text-zinc-900 dark:text-zinc-50 font-medium shrink-0">{receipt.currency}{formatCurrency(item.amount || 0, receipt.currency)}</span>
                               </li>
                             ))}
-                            {(!receipt.line_items || receipt.line_items.length === 0) && (
-                              <li className="text-sm text-zinc-500 italic">No line items extracted.</li>
-                            )}
                           </ul>
                         </div>
                       )}
                             
                       <div className="flex gap-3 mt-auto pt-4 border-t border-zinc-100 dark:border-zinc-800">
-                        <Button 
-                          variant="outline"
-                          className="flex-1"
-                          onClick={(e) => { e.stopPropagation(); startEditing(receipt); }}
-                        >
-                          Edit Data
-                        </Button>
+                        <Button variant="outline" className="flex-1" onClick={(e) => { e.stopPropagation(); startEditing(receipt); }}>Edit Data</Button>
                         <Button 
                           className="flex-1 bg-green-600 text-white hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 dark:text-white"
                           onClick={(e) => { e.stopPropagation(); handleApprove(receipt.id); }}
                           disabled={processingId === receipt.id}
                         >
-                          {processingId === receipt.id ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          ) : (
-                            <CheckCircle className="mr-2 h-4 w-4" />
-                          )}
+                          {processingId === receipt.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-4 w-4" />}
                           Approve
                         </Button>
                       </div>
@@ -512,45 +477,18 @@ export default function ReviewQueue() {
         )}
       </main>
 
-      {/* Floating Action Bar for Bulk Select */}
       {selectedIds.length > 0 && (
         <div className="fixed bottom-20 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 bg-zinc-900 dark:bg-zinc-100 shadow-2xl rounded-2xl px-4 py-3 z-50 flex items-center justify-between gap-4 min-w-max border border-zinc-800 dark:border-zinc-200 animate-in slide-in-from-bottom-5">
-          <span className="text-sm font-medium text-zinc-50 dark:text-zinc-900 whitespace-nowrap hidden sm:inline-block">
-            {selectedIds.length} selected
-          </span>
+          <span className="text-sm font-medium text-zinc-50 dark:text-zinc-900 whitespace-nowrap hidden sm:inline-block">{selectedIds.length} selected</span>
           <div className="flex gap-2 w-full sm:w-auto justify-between sm:justify-start">
-            <Button 
-              onClick={handleBulkApprove}
-              disabled={isBulkProcessing}
-              size="sm"
-              className="bg-green-600 text-white hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 font-semibold flex-1 sm:flex-none"
-            >
-              {isBulkProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              Approve
+            <Button onClick={handleBulkApprove} disabled={isBulkProcessing} size="sm" className="bg-green-600 text-white hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 font-semibold flex-1 sm:flex-none">
+              {isBulkProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Approve
             </Button>
-            <Button 
-              onClick={handleBulkReject}
-              disabled={isBulkProcessing}
-              size="sm"
-              variant="secondary"
-              className="font-semibold flex-1 sm:flex-none"
-            >
-              Reject
-            </Button>
-            <Button 
-              onClick={handleBulkDelete}
-              disabled={isBulkProcessing}
-              size="sm"
-              variant="destructive"
-              className="font-semibold flex-1 sm:flex-none"
-            >
-              Delete
-            </Button>
+            <Button onClick={handleBulkReject} disabled={isBulkProcessing} size="sm" variant="secondary" className="font-semibold flex-1 sm:flex-none">Reject</Button>
+            <Button onClick={handleBulkDelete} disabled={isBulkProcessing} size="sm" variant="destructive" className="font-semibold flex-1 sm:flex-none">Delete</Button>
           </div>
         </div>
       )}
-
-
     </div>
   );
 }
