@@ -245,6 +245,14 @@ export default function HistoryPage() {
                           <span className="flex items-center text-[10px] font-medium text-zinc-600 dark:text-zinc-400">
                             <CheckCircle size={10} className="mr-1" /> Approved
                           </span>
+                        ) : receipt.status === 'FAILED' ? (
+                          <span className="flex items-center text-[10px] font-medium text-red-600 dark:text-red-400" title={receipt.error_message || "Processing failed"}>
+                            <AlertCircle size={10} className="mr-1" /> Failed
+                          </span>
+                        ) : receipt.status === 'PROCESSING' ? (
+                          <span className="flex items-center text-[10px] font-medium text-amber-600 dark:text-amber-400">
+                            <Loader2 size={10} className="mr-1 animate-spin" /> Processing
+                          </span>
                         ) : (
                           <span className="flex items-center text-[10px] font-medium text-zinc-500 dark:text-zinc-400">
                             <Clock size={10} className="mr-1" /> Pending

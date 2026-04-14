@@ -129,6 +129,8 @@ Expected JSON schema:
 """
 
         # Call Gemini for OCR extraction
+        if gemini_client is None:
+            raise Exception("GEMINI_API_KEY is missing or invalid.")
         document = types.Part.from_bytes(data=image_bytes, mime_type=mime_type)
         
         try:
@@ -141,6 +143,8 @@ Expected JSON schema:
             )
         except Exception as api_err:
             print(f"Primary model failed ({api_err}). Retrying with gemini-2.0-flash...")
+            if gemini_client is None:
+                raise Exception("GEMINI_API_KEY is missing or invalid.")
             response = gemini_client.models.generate_content(
                 model='gemini-2.0-flash',
                 contents=[document, context_prompt],
@@ -249,7 +253,14 @@ async def upload_receipt(
         user_id = user['uid']
 
         # 1. Initialize Google Cloud Storage
-        storage_client = storage.Client.from_service_account_json('gcp-service-account.json')
+        gcp_creds_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", "gcp-service-account.json")
+        try:
+            storage_client = storage.Client.from_service_account_json(gcp_creds_path)
+        except Exception as e:
+            # Fallback if file doesn't exist (e.g. deployed environment or missing local file)
+            print(f"Warning: Could not load GCP credentials from {gcp_creds_path}: {e}")
+            storage_client = storage.Client()
+
         bucket_name = "expensify-receipts-victors" 
         bucket = storage_client.bucket(bucket_name)
 
