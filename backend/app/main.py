@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import firebase_admin
 from firebase_admin import credentials
 
-from app.api import users, receipts, review, history, analytics, categories, vendors, settings
+from app.api import users, receipts, review, history, analytics, categories, vendors, settings, zoho
 
 # Initialize Firebase Admin
 try:
@@ -31,6 +31,7 @@ app.include_router(users.router, prefix="/api/users", tags=["Users"])
 app.include_router(categories.router, prefix="/api/categories", tags=["Categories"])
 app.include_router(vendors.router, prefix="/api/vendors", tags=["Vendors"])
 app.include_router(settings.router, prefix="/api/settings", tags=["Settings"])
+app.include_router(zoho.router, prefix="/api/zoho", tags=["Zoho Integration"])
 app.include_router(receipts.router, prefix="/api/receipts", tags=["Receipts"])
 app.include_router(review.router, prefix="/api/review", tags=["Review Queue"])
 app.include_router(history.router, prefix="/api/history", tags=["History"])

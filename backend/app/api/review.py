@@ -45,8 +45,7 @@ def handle_single_approval(receipt_id: int, user_id: str, db: Session, bg_tasks:
     # Trigger Zoho integration if enabled
     user_settings = db.query(models.UserSettings).filter(models.UserSettings.user_id == user_id).first()
     if user_settings and user_settings.zoho_integration_enabled:
-        line_items = db.query(models.LineItem).filter(models.LineItem.receipt_id == receipt.id).all()
-        bg_tasks.add_task(push_receipt_to_zoho, receipt, vendor, main_category, line_items, user_settings, db)
+        bg_tasks.add_task(push_receipt_to_zoho, receipt.id, user_id)
 
 @router.get("/queue")
 def get_review_queue(user: dict = Depends(verify_token), db: Session = Depends(get_db)):
