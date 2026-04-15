@@ -49,6 +49,7 @@ def push_receipt_to_zoho(receipt_id: int, user_id: str):
     Background worker function that takes an APPROVED receipt and pushes it to Zoho Expense API.
     """
     db = SessionLocal()
+    receipt = None
     try:
         user_settings = db.query(models.UserSettings).filter(models.UserSettings.user_id == user_id).first()
         if not user_settings or not user_settings.zoho_integration_enabled or not user_settings.zoho_refresh_token:
@@ -81,6 +82,26 @@ def push_receipt_to_zoho(receipt_id: int, user_id: str):
             db.commit()
             return
 
+        # Prepare receipt file
+        files = None
+        if receipt.image_url:
+            try:
+                img_res = requests.get(receipt.image_url)
+                if img_res.ok:
+                    content_type = img_res.headers.get("Content-Type", "image/jpeg")
+                    ext = content_type.split("/")[-1]
+                    if ext == "pdf":
+                        filename = f"receipt_{receipt.id}.pdf"
+                    else:
+                        filename = f"receipt_{receipt.id}.{ext if ext != 'jpeg' else 'jpg'}"
+                    
+                    files = {
+                        'receipt': (filename, img_res.content, content_type)
+                    }
+                    print(f"[ZOHO SYNC] Attachment prepared: {filename}")
+            except Exception as img_err:
+                print(f"[ZOHO SYNC] Failed to download attachment: {img_err}")
+
         # Zoho Expense API typically expects a specific payload format for expenses
         # Ref: https://www.zoho.com/expense/api/v1/expenses/#create-an-expense
         expense_data = {
@@ -89,6 +110,7 @@ def push_receipt_to_zoho(receipt_id: int, user_id: str):
             "merchant_name": vendor.name if vendor else "Unknown",
             "currency_id": currency_id,
             "tax_amount": receipt.tax_amount or 0.0,
+            "description": receipt.description or f"Receipt from {vendor.name if vendor else 'Vendor'}"
         }
         
         if receipt.track_line_items and line_items:
@@ -105,20 +127,31 @@ def push_receipt_to_zoho(receipt_id: int, user_id: str):
         else:
             # Aggregate sync
             expense_data["category_name"] = main_category.name if main_category else "Uncategorized"
-            expense_data["description"] = f"Receipt from {vendor.name if vendor else 'Vendor'}"
             
         print(f"[ZOHO SYNC] Payload constructed: {json.dumps(expense_data)}")
         
         # We need to wrap the payload in "JSONString" for zoho v1 api
-        payload = {
+        data = {
             "JSONString": json.dumps(expense_data)
         }
         
-        response = requests.post("https://www.zohoapis.com/expense/v1/expenses", data=payload, headers={"Authorization": f"Zoho-oauthtoken {access_token}"})
+        headers = {"Authorization": f"Zoho-oauthtoken {access_token}"}
+        
+        if files:
+            response = requests.post("https://www.zohoapis.com/expense/v1/expenses", data=data, files=files, headers=headers)
+        else:
+            response = requests.post("https://www.zohoapis.com/expense/v1/expenses", data=data, headers=headers)
         
         if response.ok:
             data = response.json()
-            expense_id = data.get("expense", {}).get("expense_id")
+            # Zoho API v1 for expenses creation usually returns an array of expenses in 'expenses'
+            # or a single 'expense' object depending on exact version/endpoint.
+            expense_id = None
+            if "expense" in data and isinstance(data["expense"], dict):
+                expense_id = data["expense"].get("expense_id")
+            elif "expenses" in data and isinstance(data["expenses"], list) and len(data["expenses"]) > 0:
+                expense_id = data["expenses"][0].get("expense_id")
+                
             receipt.zoho_expense_id = str(expense_id) if expense_id else f"zoho_success_{receipt.id}"
             db.commit()
             print(f"[ZOHO SYNC] Success! Receipt {receipt.id} marked as synced. Zoho ID: {receipt.zoho_expense_id}")
@@ -129,7 +162,7 @@ def push_receipt_to_zoho(receipt_id: int, user_id: str):
             
     except Exception as e:
         print(f"[ZOHO SYNC] Exception during sync: {str(e)}")
-        if 'receipt' in locals() and receipt:
+        if receipt is not None:
             receipt.error_message = f"Zoho Sync Exception: {str(e)}"
             db.commit()
     finally:
