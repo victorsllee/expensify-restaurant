@@ -19,6 +19,21 @@ def get_zoho_access_token(refresh_token: str) -> str:
     response.raise_for_status()
     return response.json().get("access_token")
 
+def normalize_currency(currency: str) -> str:
+    """Maps common currency symbols to ISO 4217 codes."""
+    mapping = {
+        "₫": "VND",
+        "đ": "VND",
+        "$": "USD",
+        "€": "EUR",
+        "£": "GBP",
+        "¥": "JPY",
+        "₩": "KRW",
+        "S$": "SGD",
+        "RM": "MYR"
+    }
+    return mapping.get(currency, currency).upper()
+
 _zoho_currencies_cache = None
 
 def get_zoho_currencies(access_token: str) -> List[dict]:
@@ -70,7 +85,7 @@ def push_receipt_to_zoho(receipt_id: int, user_id: str):
         # Get currency ID from Zoho
         currencies = get_zoho_currencies(access_token)
         currency_id = None
-        target_currency = receipt.currency or "USD"
+        target_currency = normalize_currency(receipt.currency or "USD")
         for c in currencies:
             if c['currency_code'] == target_currency:
                 currency_id = c['currency_id']
