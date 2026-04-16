@@ -24,6 +24,8 @@ class ReceiptUpdate(BaseModel):
     date: Optional[str] = None
     total_amount: Optional[float] = None
     tax_amount: Optional[float] = None
+    description: Optional[str] = None
+    currency: Optional[str] = None
     main_category_id: Optional[int] = None
     line_items: Optional[List[LineItemUpdate]] = None
 
@@ -121,6 +123,7 @@ def get_review_queue(user: dict = Depends(verify_token), db: Session = Depends(g
             "vendor": vendor_name,
             "total_amount": r.total_amount,
             "tax_amount": r.tax_amount,
+            "description": r.description,
             "currency": r.currency or "$",
             "date": r.date.strftime("%Y-%m-%d") if r.date else None,
             "status": r.status.value,
@@ -179,6 +182,10 @@ def update_receipt(receipt_id: int, data: ReceiptUpdate, user: dict = Depends(ve
         receipt.total_amount = data.total_amount
     if data.tax_amount is not None:
         receipt.tax_amount = data.tax_amount
+    if data.description is not None:
+        receipt.description = data.description
+    if data.currency is not None:
+        receipt.currency = data.currency
     if data.main_category_id is not None:
         receipt.main_category_id = data.main_category_id
     if data.date is not None:

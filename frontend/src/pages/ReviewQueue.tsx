@@ -20,6 +20,7 @@ export default function ReviewQueue() {
   const isPdf = (url: string) => url?.split('?')[0].toLowerCase().endsWith('.pdf');
   const [receipts, setReceipts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
+  const [defaultCurrency, setDefaultCurrency] = useState('$');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [processingId, setProcessingId] = useState<number | null>(null);
@@ -46,7 +47,17 @@ export default function ReviewQueue() {
   useEffect(() => {
     fetchQueue();
     fetchCategories();
+    fetchSettings();
   }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const res = await api.get('/settings');
+      setDefaultCurrency(res.data.default_currency || '$');
+    } catch (e) {
+      console.error("Failed to load settings", e);
+    }
+  };
 
   const fetchCategories = async () => {
     try {
@@ -88,6 +99,8 @@ export default function ReviewQueue() {
       date: receipt.date,
       total_amount: receipt.total_amount,
       tax_amount: receipt.tax_amount,
+      description: receipt.description || '',
+      currency: receipt.currency || defaultCurrency,
       main_category_id: receipt.main_category?.id || null,
       track_line_items: receipt.track_line_items || false,
       line_items: receipt.line_items?.map((li: any) => ({
@@ -303,14 +316,48 @@ export default function ReviewQueue() {
                             </Popover>
                           </div>
                           <div className="space-y-1.5">
-                            <Label>Total Amount ({receipt.currency})</Label>
+                            <Label>Total Amount</Label>
+                            <div className="flex gap-2">
+                              <Select
+                                value={editForm.currency || "$"}
+                                onValueChange={(val) => setEditForm({...editForm, currency: val})}
+                              >
+                                <SelectTrigger className="w-[80px] shrink-0">
+                                  <SelectValue placeholder="Cur" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="$">$ (USD)</SelectItem>
+                                  <SelectItem value="₫">₫ (VND)</SelectItem>
+                                  <SelectItem value="€">€ (EUR)</SelectItem>
+                                  <SelectItem value="£">£ (GBP)</SelectItem>
+                                  <SelectItem value="S$">S$ (SGD)</SelectItem>
+                                  <SelectItem value="RM">RM (MYR)</SelectItem>
+                                  <SelectItem value="¥">¥ (JPY/CNY)</SelectItem>
+                                  <SelectItem value="₩">₩ (KRW)</SelectItem>
+                                  <SelectItem value="A$">A$ (AUD)</SelectItem>
+                                  <SelectItem value="C$">C$ (CAD)</SelectItem>
+                                  {defaultCurrency && !["$", "₫", "€", "£", "S$", "RM", "¥", "₩", "A$", "C$"].includes(defaultCurrency) && (
+                                    <SelectItem value={defaultCurrency}>{defaultCurrency}</SelectItem>
+                                  )}
+                                </SelectContent>
+                              </Select>
+                              <Input 
+                                type="text"
+                                className="flex-1"
+                                value={new Intl.NumberFormat().format(editForm.total_amount || 0)}
+                                onChange={(e) => {
+                                  const numericValue = parseFloat(e.target.value.replace(/,/g, ''));
+                                  setEditForm({...editForm, total_amount: isNaN(numericValue) ? 0 : numericValue});
+                                }}
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-1.5 sm:col-span-2">
+                            <Label>Description</Label>
                             <Input 
-                              type="text"
-                              value={new Intl.NumberFormat().format(editForm.total_amount || 0)}
-                              onChange={(e) => {
-                                const numericValue = parseFloat(e.target.value.replace(/,/g, ''));
-                                setEditForm({...editForm, total_amount: isNaN(numericValue) ? 0 : numericValue});
-                              }}
+                              placeholder="Add a brief description..."
+                              value={editForm.description || ''}
+                              onChange={(e) => setEditForm({...editForm, description: e.target.value})}
                             />
                           </div>
                         </div>

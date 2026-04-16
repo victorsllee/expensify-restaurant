@@ -392,6 +392,7 @@ export default function HistoryPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-6">
                           <div className="space-y-6">
                             <div className="space-y-1"><Label className="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em]">Merchant</Label><p className="text-2xl font-black text-zinc-900 dark:text-zinc-50">{receipt.vendor}</p></div>
+                            <div className="space-y-1"><Label className="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em]">Description</Label><p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{receipt.description || '—'}</p></div>
                             <div className="space-y-1"><Label className="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em]">Transaction Date</Label><div className="flex items-center gap-2 text-zinc-700 dark:text-zinc-300 font-bold"><CalendarIcon size={18} className="text-zinc-400" /><span>{receipt.date ? format(parseISO(receipt.date), "PPP") : 'Unknown Date'}</span></div></div>
                           </div>
                           <div className="space-y-6 sm:text-right">

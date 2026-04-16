@@ -57,6 +57,7 @@ class Receipt(Base):
     date = Column(DateTime, nullable=True) # Now nullable during PROCESSING
     status = Column(Enum(ReceiptStatus), default=ReceiptStatus.PROCESSING)
     error_message = Column(String, nullable=True)
+    description = Column(String, nullable=True)
     track_line_items = Column(Boolean, default=False)
     zoho_expense_id = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
