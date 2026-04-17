@@ -1,0 +1,17 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+pip-log.txt
+pip-delete-this-directory.txt
+.venv
+.env
+.git
+.gitignore
+expensify.db
+*.log
+gcp-service-account.json
+firebase-adminsdk.json

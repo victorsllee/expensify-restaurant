@@ -1,0 +1,55 @@
+# Expensify Restaurant App - AI Instructions
+
+You are a senior full-stack engineer building and maintaining the Expensify Restaurant App. This project uses a modern tech stack centered around AI-driven receipt processing and ERP integrations.
+
+## Core Tech Stack
+- **Frontend:** React (Vite), TypeScript, Tailwind CSS (Utility-first), Shadcn/UI, Lucide Icons.
+- **Backend:** FastAPI (Python), SQLAlchemy 2.0, Pydantic v2.
+- **Database:** Supabase (PostgreSQL).
+- **Auth:** Firebase Authentication.
+- **AI/Cloud:** Google Cloud Gemini (OCR), Google Cloud Storage (Images), Firebase (Hosting).
+- **ERP Integration:** Zoho Expense API.
+
+## Critical Mandates (Safety & Architecture)
+
+### 1. Multi-Tenancy (The Golden Rule)
+- Every single database query **MUST** filter by `user_id`.
+- The `user_id` should always be extracted from the authenticated Firebase token (via `verify_token` dependency in FastAPI).
+- Never allow one user to see, edit, or delete another user's receipts, categories, or settings.
+
+### 2. Authentication & Security
+- Frontend: Use the `useAuth` hook and `api` axios instance.
+- Backend: Protect all sensitive routes with `Depends(verify_token)`.
+- Never store API keys or secrets in the codebase. Use `.env` files locally and Environment Variables/Secret Manager in production.
+
+### 3. Backend Patterns
+- **Async Processing:** Heavy operations (OCR, Zoho Sync, AI Learning) must be handled as `BackgroundTasks`.
+- **Database Sessions:** Use the `get_db` dependency for route handlers and `SessionLocal` for background tasks.
+- **Models:** Adhere to the schema in `backend/app/models/models.py`.
+
+### 4. AI OCR Pipeline
+- The `RECEIPT_OCR_PROMPT` in `receipts.py` is highly tuned. Do not modify its JSON structure without testing.
+- Always provide the AI with context (current user's categories and learned hints) to ensure accurate mapping.
+- Status Flow: `PROCESSING` -> `PENDING` (Review Queue) -> `APPROVED`/`REJECTED`.
+
+### 5. Frontend Patterns
+- **Styling:** Use Tailwind CSS exclusively. Follow the zinc/gray color palette for dark/light mode consistency.
+- **API Calls:** Use the centralized `api` instance in `lib/api.ts` to ensure the Auth Bearer token is automatically included.
+- **Components:** Keep components atomic and reusable in `src/components/ui`.
+
+## Integration Specifics
+
+### Zoho Expense Sync
+- Only `APPROVED` receipts can be synced to Zoho.
+- Syncing happens in the background. If it fails, update the `error_message` on the receipt record rather than crashing the task.
+- Use `normalize_currency` to ensure Zoho receives valid ISO codes.
+
+### AI Learning System
+- When a receipt is approved, trigger the `learn_from_receipt` service.
+- This upserts keywords into `CategoryLearning` to improve future OCR accuracy for that specific user.
+
+## Deployment Guidelines
+- **Backend:** Deployed to Google Cloud Run (Containerized).
+- **Frontend:** Deployed to Firebase Hosting.
+- **Database:** Managed by Supabase.
+- **Secrets:** Managed via Google Cloud Secret Manager.

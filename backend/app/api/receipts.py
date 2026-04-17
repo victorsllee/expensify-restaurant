@@ -242,10 +242,12 @@ async def upload_receipt(
         # 1. Initialize Google Cloud Storage
         gcp_creds_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", "gcp-service-account.json")
         try:
-            storage_client = storage.Client.from_service_account_json(gcp_creds_path)
+            if os.path.exists(gcp_creds_path):
+                storage_client = storage.Client.from_service_account_json(gcp_creds_path)
+            else:
+                storage_client = storage.Client()
         except Exception as e:
-            # Fallback if file doesn't exist (e.g. deployed environment or missing local file)
-            print(f"Warning: Could not load GCP credentials from {gcp_creds_path}: {e}")
+            print(f"Warning: Could not initialize GCP Storage: {e}")
             storage_client = storage.Client()
 
         bucket_name = "expensify-receipts-victors" 
