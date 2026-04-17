@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload, selectinload
 from sqlalchemy import desc
 from pydantic import BaseModel
 from typing import Optional, List
@@ -81,7 +81,13 @@ def handle_single_deletion(receipt_id: int, user_id: str, db: Session):
 @router.get("/queue")
 def get_review_queue(user: dict = Depends(verify_token), db: Session = Depends(get_db)):
     """Fetch all PENDING receipts with their vendor, main category, and line items."""
+    # Use eager loading to prevent N+1 queries
     receipts = db.query(models.Receipt)\
+        .options(
+            joinedload(models.Receipt.vendor),
+            joinedload(models.Receipt.main_category),
+            selectinload(models.Receipt.line_items).selectinload(models.LineItem.category)
+        )\
         .filter(
             models.Receipt.status == models.ReceiptStatus.PENDING,
             models.Receipt.user_id == user['uid']
@@ -91,25 +97,25 @@ def get_review_queue(user: dict = Depends(verify_token), db: Session = Depends(g
     
     result = []
     for r in receipts:
-        vendor_name = "Unknown Vendor"
-        if r.vendor_id:
-            vendor = db.query(models.Vendor).filter(models.Vendor.id == r.vendor_id).first()
-            vendor_name = vendor.name if vendor else "Unknown Vendor"
+        vendor_name = r.vendor.name if r.vendor else "Unknown Vendor"
             
         main_category = None
-        if r.main_category_id:
-            cat = db.query(models.Category).filter(models.Category.id == r.main_category_id).first()
-            if cat:
-                main_category = {"id": cat.id, "name": cat.name, "color_code": cat.color_code}
+        if r.main_category:
+            main_category = {
+                "id": r.main_category.id, 
+                "name": r.main_category.name, 
+                "color_code": r.main_category.color_code
+            }
             
-        line_items = db.query(models.LineItem).filter(models.LineItem.receipt_id == r.id).all()
         formatted_items = []
-        for li in line_items:
+        for li in r.line_items:
             li_cat = None
-            if li.category_id:
-                cat = db.query(models.Category).filter(models.Category.id == li.category_id).first()
-                if cat:
-                    li_cat = {"id": cat.id, "name": cat.name, "color_code": cat.color_code}
+            if li.category:
+                li_cat = {
+                    "id": li.category.id, 
+                    "name": li.category.name, 
+                    "color_code": li.category.color_code
+                }
             formatted_items.append({
                 "id": li.id, 
                 "description": li.description, 

@@ -49,13 +49,13 @@ class Receipt(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(String, index=True, nullable=False) # Multi-tenancy
     image_url = Column(String, nullable=True)
-    vendor_id = Column(Integer, ForeignKey("vendors.id"), nullable=True)
-    main_category_id = Column(Integer, ForeignKey("categories.id"), nullable=True)
+    vendor_id = Column(Integer, ForeignKey("vendors.id"), nullable=True, index=True)
+    main_category_id = Column(Integer, ForeignKey("categories.id"), nullable=True, index=True)
     currency = Column(String, nullable=True) # E.g. "$", "EUR"
     total_amount = Column(Float, nullable=True) # Now nullable during PROCESSING
     tax_amount = Column(Float, nullable=True)
     date = Column(DateTime, nullable=True) # Now nullable during PROCESSING
-    status = Column(Enum(ReceiptStatus), default=ReceiptStatus.PROCESSING)
+    status = Column(Enum(ReceiptStatus), default=ReceiptStatus.PROCESSING, index=True)
     error_message = Column(String, nullable=True)
     description = Column(String, nullable=True)
     track_line_items = Column(Boolean, default=False)
@@ -70,8 +70,8 @@ class LineItem(Base):
     __tablename__ = "line_items"
 
     id = Column(Integer, primary_key=True, index=True)
-    receipt_id = Column(Integer, ForeignKey("receipts.id", ondelete="CASCADE"))
-    category_id = Column(Integer, ForeignKey("categories.id"), nullable=True)
+    receipt_id = Column(Integer, ForeignKey("receipts.id", ondelete="CASCADE"), index=True)
+    category_id = Column(Integer, ForeignKey("categories.id"), nullable=True, index=True)
     description = Column(String, nullable=False)
     amount = Column(Float, nullable=False)
 
