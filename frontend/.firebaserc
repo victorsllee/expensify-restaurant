@@ -1,5 +1,18 @@
 {
   "projects": {
     "default": "expensify-restaurant"
-  }
+  },
+  "targets": {
+    "expensify-restaurant": {
+      "hosting": {
+        "staging": [
+          "expensify-restaurant-staging"
+        ],
+        "production": [
+          "expensify-restaurant"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

@@ -7,18 +7,22 @@ venv/
 .env
 .env.local
 .env.*.local
+frontend/.env.*
+backend/env-*.yaml
 
 # Build outputs
 dist/
 build/
 .firebase/
 *.pyc
+backend/env-*.yaml
 __pycache__/
 
 # Secrets and credentials
 *.json
 !package.json
 !tsconfig.json
+!firebase.json
 !firebase-adminsdk.json.example
 
 # Logs
