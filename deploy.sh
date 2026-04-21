@@ -9,8 +9,11 @@ FIREBASE_PROJECT="expensify-restaurant"
 deploy_staging() {
     echo "Deploying to STAGING..."
     
-    # 1. Deploy Backend to Cloud Run (Staging)
-    # Ensure env-staging.yaml exists and has correct values
+    # 1. Build and Push Backend Image
+    echo "Building backend Docker image..."
+    gcloud builds submit --tag us-central1-docker.pkg.dev/$PROJECT_ID/expensify-repo/backend:latest backend/ --project $PROJECT_ID
+
+    # 2. Deploy Backend to Cloud Run (Staging)
     gcloud run deploy backend-staging \
         --image us-central1-docker.pkg.dev/$PROJECT_ID/expensify-repo/backend:latest \
         --region $REGION \
@@ -22,12 +25,12 @@ deploy_staging() {
     BACKEND_URL=$(gcloud run services describe backend-staging --region $REGION --project $PROJECT_ID --format="value(status.url)")
     echo "Staging Backend URL: $BACKEND_URL"
     
-    # 2. Update frontend .env.staging
+    # 3. Update frontend .env.staging
     echo "Updating frontend/.env.staging with BACKEND_URL..."
     # Replace VITE_API_URL in .env.staging
     sed -i '' "s|VITE_API_URL=.*|VITE_API_URL=\"$BACKEND_URL/api\"|g" frontend/.env.staging
     
-    # 3. Build and Deploy Frontend (Staging)
+    # 4. Build and Deploy Frontend (Staging)
     cd frontend
     npm install
     npm run build -- --mode staging
@@ -41,7 +44,11 @@ deploy_staging() {
 deploy_production() {
     echo "Deploying to PRODUCTION..."
     
-    # 1. Deploy Backend to Cloud Run (Production)
+    # 1. Build and Push Backend Image
+    echo "Building backend Docker image..."
+    gcloud builds submit --tag us-central1-docker.pkg.dev/$PROJECT_ID/expensify-repo/backend:latest backend/ --project $PROJECT_ID
+
+    # 2. Deploy Backend to Cloud Run (Production)
     gcloud run deploy backend \
         --image us-central1-docker.pkg.dev/$PROJECT_ID/expensify-repo/backend:latest \
         --region $REGION \
@@ -53,7 +60,7 @@ deploy_production() {
     BACKEND_URL=$(gcloud run services describe backend --region $REGION --project $PROJECT_ID --format="value(status.url)")
     echo "Production Backend URL: $BACKEND_URL"
     
-    # 2. Build and Deploy Frontend (Production)
+    # 3. Build and Deploy Frontend (Production)
     cd frontend
     npm install
     npm run build -- --mode production

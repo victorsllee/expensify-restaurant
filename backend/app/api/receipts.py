@@ -15,8 +15,21 @@ from app.models import models
 router = APIRouter()
 
 # Initialize Gemini Client globally
-gemini_api_key = os.environ.get("GEMINI_API_KEY")
-gemini_client = genai.Client(api_key=gemini_api_key) if gemini_api_key else None
+# We prioritize Google AI Studio (API Key) as Vertex AI access is currently limited
+USE_VERTEX_AI = os.environ.get("USE_VERTEX_AI", "false").lower() == "true"
+GCP_PROJECT = os.environ.get("GOOGLE_CLOUD_PROJECT", "victors-code-editor")
+GCP_LOCATION = os.environ.get("GOOGLE_CLOUD_LOCATION", "us-central1")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+
+if USE_VERTEX_AI:
+    # Use Vertex AI (System Credits)
+    gemini_client = genai.Client(vertexai=True, project=GCP_PROJECT, location=GCP_LOCATION)
+    MODEL_NAME = "gemini-1.5-flash-002"
+else:
+    # Use Google AI Studio (API Key)
+    gemini_client = genai.Client(api_key=GEMINI_API_KEY) if GEMINI_API_KEY else None
+    # Use gemini-2.5-flash which is confirmed to work with this API Key
+    MODEL_NAME = "gemini-2.5-flash"
 
 # OCR Prompt Definition
 RECEIPT_OCR_PROMPT = """
@@ -88,26 +101,31 @@ def process_receipt_async(receipt_id: int, image_bytes: bytes, mime_type: str, u
                 learned_hints[l.keyword] = l.category.name
 
         context_prompt = f"""
-You are an expert OCR AI specifically trained to extract data from restaurant receipts and invoices.
+You are an expert OCR AI specifically trained to extract data from restaurant receipts, invoices, and mobile payment screenshots.
 Analyze the provided image and extract the information into a strictly formatted JSON object.
 
 CRITICAL CONTEXT & RULES:
-1. PREDEFINED CATEGORIES: {json.dumps(category_names)}
+1. DOCUMENT TYPE AWARENESS: 
+   - If this is a mobile bank transfer or payment screenshot (e.g., Techcombank, Momo, Grab, VNPay):
+     - The "vendor" is the RECIPIENT/BENEFICIARY of the money, NOT the bank name.
+     - Look for labels like "Tới", "Người nhận", "Đơn vị thụ hưởng", "Recipient", or names appearing after "Transfer to".
+     - IGNORE the large bank logo at the top when determining the vendor.
+2. PREDEFINED CATEGORIES: {json.dumps(category_names)}
    - You MUST map every line item to one of these EXACT strings.
    - Do NOT invent new categories.
-2. EXISTING VENDORS: {json.dumps(vendor_names)}
+3. EXISTING VENDORS: {json.dumps(vendor_names)}
    - If the receipt vendor is a variation or typo of one of these, use the EXACT name from this list.
-3. LEARNED BEHAVIOR (HINTS): {json.dumps(learned_hints)}
+4. LEARNED BEHAVIOR (HINTS): {json.dumps(learned_hints)}
    - If a line item description contains one of these keywords, prioritize the associated category.
 
 Extract:
-1. "date": The date of the receipt (YYYY-MM-DD format). If not found, output null.
-2. "vendor": The name of the store or vendor.
-3. "total_amount": The grand total amount on the receipt (float).
-4. "tax_amount": The total tax amount on the receipt (float). If not found, output 0.0.
-5. "currency": The currency symbol or code (e.g., "$", "USD", "EUR").
+1. "date": The date of the transaction (YYYY-MM-DD format). If not found, output null.
+2. "vendor": The name of the store, recipient, or vendor.
+3. "total_amount": The grand total amount (float).
+4. "tax_amount": The total tax amount (float). If not found, output 0.0.
+5. "currency": The currency symbol or code (e.g., "$", "VND", "USD").
 6. "line_items": A list of objects, each containing:
-   - "description": The name of the item.
+   - "description": The name of the item or "General Expense" if not itemized.
    - "amount": The price of the item (float).
    - "category": The exact string name from the PREDEFINED CATEGORIES list above (or null).
 7. "confidence": A score between 0.0 and 1.0.
@@ -122,18 +140,18 @@ Important: Return ONLY valid JSON. No markdown. No commentary.
         
         try:
             response = gemini_client.models.generate_content(
-                model='gemini-2.5-flash',
+                model=MODEL_NAME,
                 contents=[document, context_prompt],
                 config=types.GenerateContentConfig(
                     temperature=0.0,
                 )
             )
         except Exception as api_err:
-            print(f"Primary model failed ({api_err}). Retrying with gemini-2.5-flash...")
+            print(f"Primary model failed ({api_err}). Retrying with {MODEL_NAME}...")
             if gemini_client is None:
                 raise Exception("GEMINI_API_KEY is missing or invalid.")
             response = gemini_client.models.generate_content(
-                model='gemini-2.5-flash',
+                model=MODEL_NAME,
                 contents=[document, context_prompt],
                 config=types.GenerateContentConfig(
                     temperature=0.0,

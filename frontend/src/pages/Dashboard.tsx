@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { auth } from '../lib/firebase';
-import { LogOut, Inbox, History, Loader2, Sparkles, X, ArrowLeft } from 'lucide-react';
+import { LogOut, Inbox, History, Loader2, Sparkles, X, ArrowLeft, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import { Button } from '@/components/ui/button';
@@ -37,11 +37,12 @@ export default function Dashboard() {
       ]);
       
       const allReceipts = historyRes.data.data;
-      const total = allReceipts.reduce((sum: number, r: any) => sum + (r.total_amount || 0), 0);
+      const approvedReceipts = allReceipts.filter((r: any) => r.status === 'APPROVED');
+      const total = approvedReceipts.reduce((sum: number, r: any) => sum + (r.total_amount || 0), 0);
       setTotalSpend(total);
       
       setPendingCount(queueRes.data.data.length);
-      setDefaultCurrency(settingsRes.data.default_currency);
+      setDefaultCurrency(settingsRes.data.default_currency || '$');
     } catch (err) {
       console.error("Failed to fetch stats", err);
     }
@@ -64,24 +65,33 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 pb-20">
-      {/* Header */}
-      <header className="bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
+      {/* Header - Visible only on Mobile */}
+      <header className="bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-10 md:hidden">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">Expensify</h1>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-zinc-500 dark:text-zinc-400 hidden sm:block">
-              {currentUser?.email}
-            </span>
-            <Button variant="ghost" size="icon" onClick={() => auth.signOut()}>
-              <LogOut className="h-6 w-6" />
-            </Button>
-          </div>
+          <Button variant="ghost" size="icon" onClick={() => auth.signOut()}>
+            <LogOut className="h-6 w-6" />
+          </Button>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
+        <div className="flex items-center justify-between mb-8 hidden md:flex">
+          <div>
+            <h1 className="text-3xl font-black tracking-tight text-zinc-900 dark:text-zinc-50">Dashboard</h1>
+            <p className="text-zinc-500 text-sm">Welcome back, {currentUser?.email}</p>
+          </div>
+          <div className="flex items-center gap-3">
+             <Button variant="ghost" size="icon" onClick={fetchStats} className="rounded-full">
+                <RefreshCw className="h-4 w-4 text-zinc-500" />
+             </Button>
+             <Button variant="outline" onClick={() => auth.signOut()}>
+                <LogOut className="mr-2 h-4 w-4" /> Log Out
+             </Button>
+          </div>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Stats Column */}
           <div className="lg:col-span-1 space-y-6">
@@ -125,32 +135,29 @@ export default function Dashboard() {
 
           {/* AI Column */}
           <div className="lg:col-span-2">
-            <Card className="h-full bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-900 border-none shadow-xl overflow-hidden relative">
-              {/* Background Glow */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-zinc-800 dark:bg-zinc-200 rounded-full -mr-32 -mt-32 blur-3xl opacity-50" />
-              
+            <Card className="h-full bg-white dark:bg-zinc-900 border-none shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-800 overflow-hidden relative">
               <CardHeader className="pb-3 relative z-10">
-                <CardTitle className="text-lg flex items-center gap-2 font-bold">
-                  <Sparkles className="h-5 w-5 text-zinc-400 dark:text-zinc-500" />
+                <CardTitle className="text-lg flex items-center gap-2 font-bold text-zinc-900 dark:text-zinc-50">
+                  <Sparkles className="h-5 w-5 text-amber-500" />
                   Ask AI Intelligence
                 </CardTitle>
-                <p className="text-sm text-zinc-400 dark:text-zinc-500">Query your expenses using natural language.</p>
+                <p className="text-sm text-zinc-500">Query your expenses using natural language.</p>
               </CardHeader>
               <CardContent className="space-y-4 relative z-10">
-                <div className="flex gap-2 p-1.5 bg-zinc-800 dark:bg-zinc-200 rounded-xl">
+                <div className="flex gap-2 p-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700">
                   <Input 
                     placeholder="e.g. 'How much did I spend at Kim Yen last month?'" 
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleAskAI()}
-                    className="bg-transparent border-none text-zinc-50 dark:text-zinc-900 placeholder:text-zinc-500 focus-visible:ring-0 h-11"
+                    className="bg-transparent border-none text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 focus-visible:ring-0 h-11"
                   />
                   <Button 
                     onClick={handleAskAI} 
                     disabled={isQuerying || !query.trim()}
-                    className="bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-lg px-6"
+                    className="bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 rounded-lg px-6 font-bold shadow-lg"
                   >
-                    {isQuerying ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Ask'}
+                    {isQuerying ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Ask AI'}
                   </Button>
                 </div>
 

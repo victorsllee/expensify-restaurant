@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
+import { toast } from 'sonner';
 import api from '../lib/api';
 
 interface UploadContextType {
@@ -30,6 +31,8 @@ export const UploadProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setIsUploading(true);
     setUploadQueue(files);
     setTotalToUpload(files.length);
+    
+    const toastId = toast.loading(`Uploading ${files.length} receipt${files.length > 1 ? 's' : ''}...`);
 
     try {
       const uploadPromises = files.map(file => {
@@ -41,12 +44,12 @@ export const UploadProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       });
 
       await Promise.all(uploadPromises);
+      toast.success("Upload complete! Processing in background.", { id: toastId });
       // Wait an extra second for good UX
       await new Promise(r => setTimeout(r, 1000));
     } catch (err: any) {
       console.error("Upload failed", err);
-      // Ideally show a toast notification here
-      alert("Some files failed to upload.");
+      toast.error("Some files failed to upload.", { id: toastId });
     } finally {
       setIsUploading(false);
       setUploadQueue([]);
@@ -63,13 +66,6 @@ export const UploadProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   return (
     <UploadContext.Provider value={{ isUploading, uploadQueue, totalToUpload, uploadFiles, clearUploadState }}>
       {children}
-      {/* Global Upload Progress Toast */}
-      {isUploading && (
-        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-900 px-4 py-2 rounded-full shadow-lg z-50 flex items-center gap-3 text-sm font-medium animate-in slide-in-from-bottom-5">
-          <div className="h-4 w-4 rounded-full border-2 border-zinc-50 dark:border-zinc-900 border-t-transparent animate-spin"></div>
-          Uploading {totalToUpload} receipt{totalToUpload > 1 ? 's' : ''}... Please don't close the app.
-        </div>
-      )}
     </UploadContext.Provider>
   );
 };

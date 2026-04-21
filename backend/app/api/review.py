@@ -89,7 +89,7 @@ def get_review_queue(user: dict = Depends(verify_token), db: Session = Depends(g
             selectinload(models.Receipt.line_items).selectinload(models.LineItem.category)
         )\
         .filter(
-            models.Receipt.status == models.ReceiptStatus.PENDING,
+            models.Receipt.status.in_([models.ReceiptStatus.PENDING, models.ReceiptStatus.PROCESSING, models.ReceiptStatus.FAILED]),
             models.Receipt.user_id == user['uid']
         )\
         .order_by(desc(models.Receipt.created_at))\
@@ -134,6 +134,7 @@ def get_review_queue(user: dict = Depends(verify_token), db: Session = Depends(g
             "date": r.date.strftime("%Y-%m-%d") if r.date else None,
             "status": r.status.value,
             "track_line_items": r.track_line_items,
+            "error_message": r.error_message,
             "main_category": main_category,
             "line_items": formatted_items
         })

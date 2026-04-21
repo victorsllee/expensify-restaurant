@@ -6,9 +6,11 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatCurrency(amount: number, currency: string = '$') {
+  if (!currency) currency = '$';
   const c = currency.toUpperCase();
+  
   // Map common currency codes/symbols to zero decimal places
-  const noDecimalCodes = ['VND', 'JPY', 'KRW'];
+  const noDecimalCodes = ['VND', 'VNĐ', 'JPY', 'KRW'];
   const noDecimalSymbols = ['₫', '¥', '₩'];
   
   const hasNoDecimals = noDecimalCodes.includes(c) || noDecimalSymbols.includes(currency);

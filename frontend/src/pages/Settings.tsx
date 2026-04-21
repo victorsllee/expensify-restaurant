@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Loader2, Trash2, Plus, Users, Tags, Link2, Unlink, Check, X } from 'lucide-react';
+import { toast } from 'sonner';
 import api from '../lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,10 +51,10 @@ export default function Settings() {
     try {
       setLoading(true);
       await api.post(`/zoho/callback?code=${encodeURIComponent(code)}`);
-      alert("Zoho connected successfully!");
+      toast.success("Zoho connected successfully!");
       fetchData();
     } catch (e: any) {
-      alert("Failed to connect to Zoho: " + (e.response?.data?.detail || e.message));
+      toast.error("Failed to connect to Zoho: " + (e.response?.data?.detail || e.message));
       fetchData();
     }
   };
@@ -64,7 +65,7 @@ export default function Settings() {
       const res = await api.get('/zoho/auth-url');
       window.location.href = res.data.url;
     } catch (e: any) {
-      alert("Failed to initiate Zoho connection: " + (e.response?.data?.detail || e.message));
+      toast.error("Failed to initiate Zoho connection: " + (e.response?.data?.detail || e.message));
       setIsZohoLoading(false);
     }
   };
@@ -75,9 +76,9 @@ export default function Settings() {
       setIsZohoLoading(true);
       await api.delete('/zoho/disconnect');
       setZohoEnabled(false);
-      alert("Zoho disconnected.");
+      toast.success("Zoho disconnected.");
     } catch (e: any) {
-      alert("Failed to disconnect Zoho: " + (e.response?.data?.detail || e.message));
+      toast.error("Failed to disconnect Zoho: " + (e.response?.data?.detail || e.message));
     } finally {
       setIsZohoLoading(false);
     }
@@ -114,10 +115,16 @@ export default function Settings() {
   const handleSaveSettings = async () => {
     try {
       setIsSavingSettings(true);
-      await api.put('/settings', { default_currency: defaultCurrency });
-      alert("Settings saved!");
+      await api.put('/settings', { 
+        default_currency: defaultCurrency,
+        zoho_integration_enabled: zohoEnabled 
+      });
+      toast.success("Settings saved!");
     } catch (e: any) {
-      alert(e.response?.data?.detail || "Failed to save settings");
+      const errorMsg = typeof e.response?.data?.detail === 'string' 
+        ? e.response.data.detail 
+        : "Failed to save settings";
+      toast.error(errorMsg);
     } finally {
       setIsSavingSettings(false);
     }
@@ -130,8 +137,12 @@ export default function Settings() {
       const res = await api.post('/categories', { name: newCatName, color_code: newCatColor });
       setCategories(prev => [...prev, res.data]);
       setNewCatName('');
+      toast.success("Category added");
     } catch (e: any) {
-      alert(e.response?.data?.detail || "Failed to add category");
+      const errorMsg = typeof e.response?.data?.detail === 'string' 
+        ? e.response.data.detail 
+        : "Failed to add category";
+      toast.error(errorMsg);
     } finally {
       setIsAddingCat(false);
     }
@@ -142,8 +153,12 @@ export default function Settings() {
     try {
       await api.delete(`/categories/${id}`);
       setCategories(prev => prev.filter(c => c.id !== id));
+      toast.success("Category deleted");
     } catch (e: any) {
-      alert(e.response?.data?.detail || "Failed to delete");
+      const errorMsg = typeof e.response?.data?.detail === 'string' 
+        ? e.response.data.detail 
+        : "Failed to delete";
+      toast.error(errorMsg);
     }
   };
 
@@ -166,8 +181,12 @@ export default function Settings() {
       const res = await api.put(`/categories/${editingCatId}`, { name: editingCatName, color_code: editingCatColor });
       setCategories(prev => prev.map(c => c.id === editingCatId ? res.data : c));
       handleCancelEdit();
+      toast.success("Category updated");
     } catch (e: any) {
-      alert(e.response?.data?.detail || "Failed to update category");
+      const errorMsg = typeof e.response?.data?.detail === 'string' 
+        ? e.response.data.detail 
+        : "Failed to update category";
+      toast.error(errorMsg);
     } finally {
       setIsUpdatingCat(false);
     }
@@ -175,7 +194,7 @@ export default function Settings() {
 
   const handleMergeVendors = async () => {
     if (!mergeSource || !mergeDest || mergeSource === mergeDest) {
-      alert("Please select two distinct vendors");
+      toast.error("Please select two distinct vendors");
       return;
     }
     if (!confirm("Are you sure? This will merge all receipts into the target vendor and delete the duplicate. This cannot be undone.")) return;
@@ -188,9 +207,12 @@ export default function Settings() {
       setMergeSource('');
       setMergeDest('');
       await fetchVendors();
-      alert("Merged successfully!");
+      toast.success("Merged successfully!");
     } catch (e: any) {
-      alert(e.response?.data?.detail || "Merge failed");
+      const errorMsg = typeof e.response?.data?.detail === 'string' 
+        ? e.response.data.detail 
+        : "Merge failed";
+      toast.error(errorMsg);
     } finally {
       setIsMerging(false);
     }

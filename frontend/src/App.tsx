@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'sonner';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { UploadProvider } from './contexts/UploadContext';
 import Login from './pages/Login';
@@ -38,6 +39,7 @@ export default function App() {
       <UploadProvider>
         <BrowserRouter>
           <AppRoutes />
+          <Toaster position="top-center" richColors />
         </BrowserRouter>
       </UploadProvider>
     </AuthProvider>

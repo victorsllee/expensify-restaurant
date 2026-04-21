@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, CheckCircle, FileText, Loader2, Calendar, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, CheckCircle, FileText, Loader2, Calendar, ChevronDown, ChevronUp, Edit3, Trash2, RefreshCw } from 'lucide-react';
+import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter, SheetDescription } from "@/components/ui/sheet";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format, parseISO } from "date-fns";
 import { formatCurrency } from "@/lib/utils";
@@ -85,8 +87,9 @@ export default function ReviewQueue() {
       setProcessingId(id);
       await api.put(`/review/${id}/approve`);
       setReceipts(prev => prev.filter(r => r.id !== id));
+      toast.success("Receipt approved");
     } catch (err: any) {
-      alert("Failed to approve receipt: " + (err.response?.data?.detail || err.message));
+      toast.error("Failed to approve receipt: " + (err.response?.data?.detail || err.message));
     } finally {
       setProcessingId(null);
     }
@@ -141,8 +144,9 @@ export default function ReviewQueue() {
         return r;
       }));
       setEditingId(null);
+      toast.success("Changes saved");
     } catch (err: any) {
-      alert("Failed to update receipt: " + (err.response?.data?.detail || err.message));
+      toast.error("Failed to update receipt: " + (err.response?.data?.detail || err.message));
     } finally {
       setProcessingId(null);
     }
@@ -152,18 +156,33 @@ export default function ReviewQueue() {
     setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
   
+  const handleDelete = async (id: number) => {
+    if (!confirm("Delete this receipt?")) return;
+    try {
+      setProcessingId(id);
+      await api.delete(`/review/${id}`);
+      setReceipts(prev => prev.filter(r => r.id !== id));
+      toast.success("Receipt deleted");
+    } catch (err: any) {
+      toast.error("Failed to delete receipt: " + (err.response?.data?.detail || err.message));
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
   const handleBulkApprove = async () => {
     if (selectedIds.length === 0) return;
     try {
       setIsBulkProcessing(true);
       await api.put('/review/bulk-approve', { receipt_ids: selectedIds });
       setReceipts(prev => prev.filter(r => !selectedIds.includes(r.id)));
+      toast.success(`${selectedIds.length} receipts approved`);
       setSelectedIds([]);
     } catch (err: any) {
       const message = typeof err.response?.data?.detail === 'string' 
         ? err.response.data.detail
         : JSON.stringify(err.response?.data?.detail) || err.message;
-      alert("Bulk approval failed: " + message);
+      toast.error("Bulk approval failed: " + message);
     } finally {
       setIsBulkProcessing(false);
     }
@@ -175,9 +194,10 @@ export default function ReviewQueue() {
       setIsBulkProcessing(true);
       await api.put('/review/bulk-reject', { receipt_ids: selectedIds });
       setReceipts(prev => prev.filter(r => !selectedIds.includes(r.id)));
+      toast.info(`${selectedIds.length} receipts rejected`);
       setSelectedIds([]);
     } catch (err: any) {
-      alert("Bulk rejection failed: " + (err.response?.data?.detail || err.message));
+      toast.error("Bulk rejection failed: " + (err.response?.data?.detail || err.message));
     } finally {
       setIsBulkProcessing(false);
     }
@@ -190,13 +210,18 @@ export default function ReviewQueue() {
       setIsBulkProcessing(true);
       await api.delete('/review/bulk-delete', { data: { receipt_ids: selectedIds } });
       setReceipts(prev => prev.filter(r => !selectedIds.includes(r.id)));
+      toast.success(`${selectedIds.length} receipts deleted`);
       setSelectedIds([]);
     } catch (err: any) {
-      alert("Bulk deletion failed: " + (err.response?.data?.detail || err.message));
+      toast.error("Bulk deletion failed: " + (err.response?.data?.detail || err.message));
     } finally {
       setIsBulkProcessing(false);
     }
   };
+
+  // Standard style for all form inputs/selects
+  const inputBaseClass = "h-14 w-full bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 rounded-xl focus-visible:ring-zinc-900 font-bold text-base transition-all";
+  const labelClass = "text-xs font-black uppercase tracking-widest text-zinc-400 mb-2 block";
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col">
@@ -205,8 +230,11 @@ export default function ReviewQueue() {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 ml-2">Review Queue</h1>
+        <Button variant="ghost" size="icon" onClick={fetchQueue} className="ml-2 rounded-full">
+           <RefreshCw className={`h-4 w-4 text-zinc-500 ${loading ? 'animate-spin' : ''}`} />
+        </Button>
         <span className="ml-auto bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-0.5 rounded-full dark:bg-amber-900/30 dark:text-amber-500 border border-amber-200 dark:border-amber-900">
-          {receipts.length} Pending
+          {receipts.length} total
         </span>
       </header>
 
@@ -280,188 +308,37 @@ export default function ReviewQueue() {
                 </div>
 
                 <div className="p-5 flex-1 flex flex-col min-w-0">
-                  {editingId === receipt.id ? (
-                    <div className="space-y-4 mb-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">Edit Receipt Data</h3>
-                        <Button variant="ghost" size="icon" onClick={cancelEditing} className="h-6 w-6">
-                          <X size={16} />
-                        </Button>
-                      </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div className="space-y-1.5 sm:col-span-2">
-                            <Label>Vendor</Label>
-                            <Input 
-                              value={editForm.vendor || ''}
-                              onChange={(e) => setEditForm({...editForm, vendor: e.target.value})}
-                            />
-                          </div>
-                          <div className="space-y-1.5">
-                            <Label>Date</Label>
-                            <Popover>
-                              <PopoverTrigger>
-                                <div className="w-full flex items-center px-3 h-9 rounded-md border border-zinc-200 dark:border-zinc-700 text-sm cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800">
-                                  <Calendar className="mr-2 h-4 w-4 text-zinc-400" />
-                                  {editForm.date ? format(parseISO(editForm.date), "PPP") : <span className="text-muted-foreground">Pick a date</span>}
-                                </div>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0">
-                                <CalendarComponent
-                                  mode="single"
-                                  selected={editForm.date ? parseISO(editForm.date) : undefined}
-                                  onSelect={(date) => setEditForm({...editForm, date: date ? format(date, 'yyyy-MM-dd') : ''})}
-                                  initialFocus
-                                />
-                              </PopoverContent>
-                            </Popover>
-                          </div>
-                          <div className="space-y-1.5">
-                            <Label>Total Amount</Label>
-                            <div className="flex gap-2">
-                              <Select
-                                value={editForm.currency || "$"}
-                                onValueChange={(val) => setEditForm({...editForm, currency: val})}
-                              >
-                                <SelectTrigger className="w-[80px] shrink-0">
-                                  <SelectValue placeholder="Cur" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="$">$ (USD)</SelectItem>
-                                  <SelectItem value="₫">₫ (VND)</SelectItem>
-                                  <SelectItem value="€">€ (EUR)</SelectItem>
-                                  <SelectItem value="£">£ (GBP)</SelectItem>
-                                  <SelectItem value="S$">S$ (SGD)</SelectItem>
-                                  <SelectItem value="RM">RM (MYR)</SelectItem>
-                                  <SelectItem value="¥">¥ (JPY/CNY)</SelectItem>
-                                  <SelectItem value="₩">₩ (KRW)</SelectItem>
-                                  <SelectItem value="A$">A$ (AUD)</SelectItem>
-                                  <SelectItem value="C$">C$ (CAD)</SelectItem>
-                                  {defaultCurrency && !["$", "₫", "€", "£", "S$", "RM", "¥", "₩", "A$", "C$"].includes(defaultCurrency) && (
-                                    <SelectItem value={defaultCurrency}>{defaultCurrency}</SelectItem>
-                                  )}
-                                </SelectContent>
-                              </Select>
-                              <Input 
-                                type="text"
-                                className="flex-1"
-                                value={new Intl.NumberFormat().format(editForm.total_amount || 0)}
-                                onChange={(e) => {
-                                  const numericValue = parseFloat(e.target.value.replace(/,/g, ''));
-                                  setEditForm({...editForm, total_amount: isNaN(numericValue) ? 0 : numericValue});
-                                }}
-                              />
-                            </div>
-                          </div>
-                          <div className="space-y-1.5 sm:col-span-2">
-                            <Label>Description</Label>
-                            <Input 
-                              placeholder="Add a brief description..."
-                              value={editForm.description || ''}
-                              onChange={(e) => setEditForm({...editForm, description: e.target.value})}
-                            />
-                          </div>
-                        </div>
-
-                        <div className="space-y-1.5 sm:col-span-2 mt-2">
-                          <Label>Main Category</Label>
-                          <Select 
-                            value={editForm.main_category_id?.toString() || ""}
-                            onValueChange={(val) => setEditForm({...editForm, main_category_id: parseInt(val)})}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select a category">
-                                {editForm.main_category_id ? categories.find(c => c.id === editForm.main_category_id)?.name : "Select a category"}
-                              </SelectValue>
-                            </SelectTrigger>
-                            <SelectContent>
-                              {categories.map((c) => (
-                                <SelectItem key={c.id} value={c.id.toString()}>{c.name}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      
-                      <div className="mt-6 flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md">
-                        <div className="space-y-0.5">
-                          <Label className="text-base">Save Line Items</Label>
-                          <p className="text-xs text-zinc-500">
-                            {editForm.track_line_items 
-                              ? "Every line item will be saved and tracked individually."
-                              : "Receipt will be saved as a single expense under the Main Category."}
-                          </p>
-                        </div>
-                        <Switch 
-                          checked={editForm.track_line_items}
-                          onCheckedChange={(checked) => setEditForm({...editForm, track_line_items: checked})}
-                        />
-                      </div>
-
-                      {editForm.track_line_items && (
-                        <div className="mt-4 space-y-3">
-                          <Label>Line Items Categorization</Label>
-                          <div className="space-y-3 p-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md">
-                            {editForm.line_items?.map((item: any, idx: number) => (
-                             <div key={item.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-sm">
-                               <div className="flex-1 truncate">
-                                 <span className="font-medium">{item.description}</span>
-                                 <span className="text-zinc-500 ml-2">{receipt.currency}{item.amount}</span>
-                               </div>
-                               <div className="w-full sm:w-48 shrink-0">
-                                  <Select 
-                                    value={item.category_id?.toString() || "none"}
-                                    onValueChange={(val) => {
-                                      const updatedItems = [...editForm.line_items];
-                                      updatedItems[idx].category_id = val === "none" ? null : parseInt(val);
-                                      setEditForm({...editForm, line_items: updatedItems});
-                                    }}
-                                  >
-                                    <SelectTrigger className="w-full h-8 text-xs">
-                                      <SelectValue placeholder="Category">
-                                        {item.category_id ? categories.find(c => c.id === item.category_id)?.name : "Category"}
-                                      </SelectValue>
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="none">None</SelectItem>
-                                      {categories.map((c) => (
-                                        <SelectItem key={c.id} value={c.id.toString()}>{c.name}</SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                               </div>
-                             </div>
-                          ))}
-                        </div>
-                      </div>
-                      )}
-
-                      <div className="flex justify-end gap-2 mt-4">
-                        <Button variant="outline" onClick={cancelEditing}>Cancel</Button>
-                        <Button onClick={() => saveEdit(receipt.id)} disabled={processingId === receipt.id}>
-                          {processingId === receipt.id && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                          Save Changes
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
                     <div className="flex flex-col flex-1 h-full cursor-pointer" onClick={() => toggleSelection(receipt.id)}>
                       <div className="flex justify-between items-start mb-4">
                         <div className="flex-1 min-w-0 pr-4">
                           <div className="flex items-center gap-2">
-                            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 truncate">{receipt.vendor}</h3>
+                            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 truncate">
+                              {receipt.status === 'PROCESSING' ? 'Processing...' : (receipt.vendor || 'Unknown Vendor')}
+                            </h3>
                             {receipt.main_category && (
                               <Badge style={{ backgroundColor: receipt.main_category.color_code, color: 'white' }}>
                                 {receipt.main_category.name}
                               </Badge>
                             )}
+                            {receipt.status === 'PROCESSING' && (
+                              <Badge variant="secondary" className="animate-pulse">
+                                AI Scanning
+                              </Badge>
+                            )}
+                            {receipt.status === 'FAILED' && (
+                              <Badge variant="destructive">
+                                OCR Failed
+                              </Badge>
+                            )}
                           </div>
                           <div className="flex items-center text-sm text-zinc-500 dark:text-zinc-400 mt-1">
                             <Calendar size={14} className="mr-1 shrink-0" />
-                            <span className="truncate">{receipt.date || 'Unknown Date'}</span>
+                            <span className="truncate">{receipt.date || 'Analyzing date...'}</span>
                           </div>
                         </div>
                         <div className="text-right shrink-0">
                           <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
-                            {receipt.currency}{formatCurrency(receipt.total_amount || 0, receipt.currency)}
+                            {receipt.status === 'PROCESSING' ? '---' : `${receipt.currency}${formatCurrency(receipt.total_amount || 0, receipt.currency)}`}
                           </p>
                           {receipt.tax_amount > 0 && (
                             <p className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -470,6 +347,12 @@ export default function ReviewQueue() {
                           )}
                         </div>
                       </div>
+
+                      {receipt.status === 'FAILED' && receipt.error_message && (
+                        <div className="mb-4 p-2 text-[10px] bg-red-50 dark:bg-red-900/20 text-red-600 rounded border border-red-100 dark:border-red-800">
+                          Error: {receipt.error_message}
+                        </div>
+                      )}
 
                       {receipt.track_line_items && (
                         <div className="flex gap-3 mb-4">
@@ -505,24 +388,238 @@ export default function ReviewQueue() {
                       )}
                             
                       <div className="flex gap-3 mt-auto pt-4 border-t border-zinc-100 dark:border-zinc-800">
-                        <Button variant="outline" className="flex-1" onClick={(e) => { e.stopPropagation(); startEditing(receipt); }}>Edit Data</Button>
+                        <Button variant="ghost" size="icon" className="text-red-500 hover:bg-red-50" onClick={(e) => { e.stopPropagation(); handleDelete(receipt.id); }} disabled={processingId === receipt.id || receipt.status === 'PROCESSING'}>
+                           <Trash2 className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" className="flex-1 gap-2" onClick={(e) => { e.stopPropagation(); startEditing(receipt); }} disabled={receipt.status === 'PROCESSING'}>
+                           <Edit3 className="h-4 w-4" /> Edit
+                        </Button>
                         <Button 
-                          className="flex-1 bg-green-600 text-white hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 dark:text-white"
+                          className="flex-1 bg-green-600 text-white hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 dark:text-white gap-2"
                           onClick={(e) => { e.stopPropagation(); handleApprove(receipt.id); }}
-                          disabled={processingId === receipt.id}
+                          disabled={processingId === receipt.id || receipt.status === 'PROCESSING' || receipt.status === 'FAILED'}
                         >
                           {processingId === receipt.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-4 w-4" />}
                           Approve
                         </Button>
                       </div>
                     </div>
-                  )}
                 </div>
               </Card>
             ))}
           </div>
         )}
       </main>
+
+      {/* Editing Sheet */}
+      <Sheet open={editingId !== null} onOpenChange={(open) => !open && cancelEditing()}>
+        <SheetContent className="w-full sm:max-w-[850px] overflow-y-auto p-0 border-l border-zinc-200 dark:border-zinc-800">
+          <div className="flex flex-col h-full">
+            <SheetHeader className="px-10 py-8 border-b border-zinc-100 dark:border-zinc-900 sticky top-0 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md z-20">
+              <SheetTitle className="text-3xl font-black tracking-tight">Edit Receipt</SheetTitle>
+              <SheetDescription className="text-base">
+                Refine the information extracted by AI.
+              </SheetDescription>
+            </SheetHeader>
+            
+            <div className="flex-1 overflow-y-auto px-10 py-10 space-y-12 pb-40">
+                {/* Basic Info Section */}
+                <div className="space-y-8">
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label className={labelClass}>Vendor / Recipient</Label>
+                      <Input 
+                        value={editForm.vendor || ''}
+                        onChange={(e) => setEditForm({...editForm, vendor: e.target.value})}
+                        className={inputBaseClass}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label className={labelClass}>Date</Label>
+                      <Popover>
+                        <PopoverTrigger className={inputBaseClass + " flex items-center justify-start px-4"}>
+                            <Calendar className="mr-3 h-5 w-5 text-zinc-400 shrink-0" />
+                            <span className="truncate">{editForm.date ? format(parseISO(editForm.date), "PPP") : "Pick a date"}</span>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0 rounded-2xl shadow-2xl border-zinc-200 dark:border-zinc-800" align="start">
+                          <CalendarComponent
+                            mode="single"
+                            selected={editForm.date ? parseISO(editForm.date) : undefined}
+                            onSelect={(date) => setEditForm({...editForm, date: date ? format(date, 'yyyy-MM-dd') : ''})}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className={labelClass}>Currency</Label>
+                      <Select
+                        value={editForm.currency || "$"}
+                        onValueChange={(val) => setEditForm({...editForm, currency: val})}
+                      >
+                        <SelectTrigger className={inputBaseClass + " px-4"}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl">
+                          <SelectItem value="$">$</SelectItem>
+                          <SelectItem value="₫">₫</SelectItem>
+                          <SelectItem value="VNĐ">VNĐ</SelectItem>
+                          <SelectItem value="€">€</SelectItem>
+                          <SelectItem value="£">£</SelectItem>
+                          <SelectItem value="S$">S$</SelectItem>
+                          <SelectItem value="RM">RM</SelectItem>
+                          {defaultCurrency && !["$", "₫", "VNĐ", "€", "£", "S$", "RM"].includes(defaultCurrency) && (
+                            <SelectItem value={defaultCurrency}>{defaultCurrency}</SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className={labelClass}>Total Amount</Label>
+                      <Input 
+                        type="number"
+                        className={inputBaseClass + " text-2xl"}
+                        value={editForm.total_amount || 0}
+                        onChange={(e) => setEditForm({...editForm, total_amount: parseFloat(e.target.value) || 0})}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className={labelClass}>Memo / Description</Label>
+                      <Input 
+                        placeholder="What was this for?"
+                        value={editForm.description || ''}
+                        onChange={(e) => setEditForm({...editForm, description: e.target.value})}
+                        className={inputBaseClass}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Categorization Section */}
+                <div className="space-y-8">
+                  <h3 className="text-xs font-black uppercase tracking-widest text-zinc-400">Categorization</h3>
+                  
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                      <Label className={labelClass}>Main Category</Label>
+                      <Select 
+                        value={editForm.main_category_id?.toString() || ""}
+                        onValueChange={(val) => setEditForm({...editForm, main_category_id: parseInt(val)})}
+                      >
+                        <SelectTrigger className={inputBaseClass + " h-16 px-5"}>
+                          <SelectValue placeholder="Select a category">
+                             {editForm.main_category_id ? (
+                               <div className="flex items-center gap-3">
+                                  <div 
+                                    className="w-4 h-4 rounded-full border-2 border-white dark:border-zinc-800 shadow-sm" 
+                                    style={{backgroundColor: categories.find(c => c.id === editForm.main_category_id)?.color_code}} 
+                                  />
+                                  <span className="font-bold">{categories.find(c => c.id === editForm.main_category_id)?.name}</span>
+                               </div>
+                             ) : "Select a category"}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent className="rounded-2xl p-2">
+                          {categories.map((c) => (
+                            <SelectItem key={c.id} value={c.id.toString()} className="rounded-lg py-3">
+                              <div className="flex items-center gap-3">
+                                 <div className="w-3 h-3 rounded-full shadow-inner" style={{backgroundColor: c.color_code}} />
+                                 <span className="font-medium text-sm">{c.name}</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="flex items-center justify-between p-6 bg-zinc-900 dark:bg-zinc-50 border border-zinc-800 dark:border-zinc-200 rounded-2xl shadow-xl transition-all">
+                      <div className="space-y-1">
+                        <Label className="text-sm font-bold text-zinc-50 dark:text-zinc-900 mb-0">Track Line Items</Label>
+                        <p className="text-[11px] text-zinc-400 dark:text-zinc-500 font-medium uppercase tracking-tight">Extract individual items for analytics</p>
+                      </div>
+                      <Switch 
+                        checked={editForm.track_line_items}
+                        onCheckedChange={(checked) => setEditForm({...editForm, track_line_items: checked})}
+                        className="scale-125 data-[state=checked]:bg-green-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Line Items Section */}
+                {editForm.track_line_items && (
+                  <div className="space-y-8 animate-in fade-in slide-in-from-top-4 duration-300">
+                    <div className="flex items-center justify-between">
+                       <h3 className="text-xs font-black uppercase tracking-widest text-zinc-400">Itemized Breakdown</h3>
+                       <Badge variant="outline" className="rounded-full px-3 py-1 text-[11px] font-black">{editForm.line_items?.length || 0} Items</Badge>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      {editForm.line_items?.map((item: any, idx: number) => (
+                        <div key={item.id} className="p-6 bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-900 rounded-2xl shadow-sm hover:border-zinc-200 dark:hover:border-zinc-800 transition-all space-y-4">
+                          <div className="flex justify-between items-start">
+                            <span className="text-base font-bold text-zinc-900 dark:text-zinc-100 leading-tight pr-4">{item.description}</span>
+                            <span className="text-lg font-black font-mono text-zinc-900 dark:text-zinc-50">{editForm.currency}{formatCurrency(item.amount || 0, editForm.currency)}</span>
+                          </div>
+                          <Select 
+                            value={item.category_id?.toString() || "none"}
+                            onValueChange={(val) => {
+                              const updatedItems = [...editForm.line_items];
+                              updatedItems[idx].category_id = val === "none" ? null : parseInt(val);
+                              setEditForm({...editForm, line_items: updatedItems});
+                            }}
+                          >
+                            <SelectTrigger className="h-12 text-sm bg-zinc-50 dark:bg-zinc-900/50 border-zinc-100 dark:border-zinc-800 rounded-xl">
+                               <SelectValue placeholder="Category">
+                                 <div className="flex items-center gap-2">
+                                    {item.category_id ? (
+                                      <>
+                                        <div className="w-2.5 h-2.5 rounded-full" style={{backgroundColor: categories.find(c => c.id === item.category_id)?.color_code}} />
+                                        <span className="font-bold">{categories.find(c => c.id === item.category_id)?.name}</span>
+                                      </>
+                                    ) : <span className="text-zinc-400">Uncategorized</span>}
+                                 </div>
+                               </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl">
+                              <SelectItem value="none">Uncategorized</SelectItem>
+                              {categories.map((c) => (
+                                <SelectItem key={c.id} value={c.id.toString()}>
+                                  <div className="flex items-center gap-2">
+                                     <div className="w-2.5 h-2.5 rounded-full" style={{backgroundColor: c.color_code}} />
+                                     {c.name}
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+            </div>
+
+            <SheetFooter className="px-10 py-8 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl border-t border-zinc-100 dark:border-zinc-900 flex flex-row gap-4 sticky bottom-0 z-20">
+              <Button variant="outline" onClick={cancelEditing} className="flex-1 h-16 rounded-2xl font-black text-base border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all">
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => editingId && saveEdit(editingId)} 
+                disabled={processingId !== null} 
+                className="flex-[2] h-16 rounded-2xl font-black text-lg bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 shadow-2xl transition-all active:scale-95"
+              >
+                {processingId !== null ? <Loader2 className="h-6 w-6 animate-spin" /> : "Save Changes"}
+              </Button>
+            </SheetFooter>
+          </div>
+        </SheetContent>
+      </Sheet>
+
 
       {selectedIds.length > 0 && (
         <div className="fixed bottom-20 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 bg-zinc-900 dark:bg-zinc-100 shadow-2xl rounded-2xl px-4 py-3 z-50 flex items-center justify-between gap-4 min-w-max border border-zinc-800 dark:border-zinc-200 animate-in slide-in-from-bottom-5">

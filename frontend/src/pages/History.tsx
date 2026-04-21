@@ -4,6 +4,7 @@ import {
   Loader2, Cloud, AlertCircle, RefreshCw, X, ArrowDown, 
   ArrowUp, SlidersHorizontal, RotateCcw, Check
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import { formatCurrency, cn } from '../lib/utils';
@@ -16,7 +17,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { 
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger
+  DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenuGroup
 } from "@/components/ui/dropdown-menu";
 import { format, isWithinInterval, parseISO, startOfDay, endOfDay, isValid } from "date-fns";
 
@@ -73,12 +75,13 @@ export default function HistoryPage() {
       setReceipts((prev: any[]) => prev.map((r: any) => 
         r.id === id ? { ...r, error_message: null, status: 'PROCESSING' } : r
       ));
+      toast.info("Re-sync triggered");
       setTimeout(() => {
         fetchHistory();
         setProcessingId(null);
       }, 5000); 
     } catch (err: any) {
-      alert("Failed to trigger re-sync: " + (err.response?.data?.detail || err.message));
+      toast.error("Failed to trigger re-sync: " + (err.response?.data?.detail || err.message));
       setProcessingId(null);
     }
   };
@@ -150,7 +153,7 @@ export default function HistoryPage() {
   }, [receipts, filters, viewMode]);
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col pb-20">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col">
       <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-30 px-4 py-4 space-y-4 shadow-sm backdrop-blur-md bg-white/90 dark:bg-zinc-900/90">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -185,17 +188,18 @@ export default function HistoryPage() {
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto">
+            <Button variant="ghost" size="icon" onClick={fetchHistory} className="rounded-xl border border-zinc-200 dark:border-zinc-800 shrink-0">
+               <RefreshCw className={cn("h-4 w-4 text-zinc-500", loading && "animate-spin")} />
+            </Button>
             <Popover>
-              <PopoverTrigger>
-                <div className="flex items-center justify-center h-10 px-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm font-medium cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors gap-2">
-                  <SlidersHorizontal className="h-4 w-4" />
-                  Filters
+              <PopoverTrigger className="flex items-center justify-center h-10 px-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm font-medium cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors gap-2 outline-none">
+                  <SlidersHorizontal className="h-4 w-4 text-zinc-500" />
+                  <span>Filters</span>
                   {(filters.statuses.length > 0 || filters.syncStatus !== 'all' || filters.dateRange.from) && (
                     <Badge className="ml-1 h-5 w-5 p-0 flex items-center justify-center rounded-full bg-zinc-900 dark:bg-zinc-50 text-[10px]">
                       {(filters.statuses.length > 0 ? 1 : 0) + (filters.syncStatus !== 'all' ? 1 : 0) + (filters.dateRange.from ? 1 : 0)}
                     </Badge>
                   )}
-                </div>
               </PopoverTrigger>
               <PopoverContent className="w-80 p-4 rounded-2xl shadow-2xl border-zinc-200 dark:border-zinc-800" align="end">
                 <div className="space-y-4">
@@ -274,28 +278,30 @@ export default function HistoryPage() {
             </Popover>
 
             <DropdownMenu>
-              <DropdownMenuTrigger>
-                <div className="flex items-center justify-center h-10 px-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm font-medium cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors gap-2">
-                  {filters.sortOrder === 'desc' ? <ArrowDown className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />}
-                  Sort
-                </div>
+              <DropdownMenuTrigger className="flex items-center justify-center h-10 px-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm font-medium cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors gap-2 outline-none">
+                  {filters.sortOrder === 'desc' ? <ArrowDown className="h-4 w-4 text-zinc-500" /> : <ArrowUp className="h-4 w-4 text-zinc-500" />}
+                  <span>Sort</span>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 rounded-xl z-50">
-                <DropdownMenuLabel className="text-[10px] uppercase text-zinc-500 font-black tracking-widest">Sort By</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => setFilters({ ...filters, sortBy: 'date' })} className="flex items-center justify-between text-sm font-medium cursor-pointer">
-                  Date {filters.sortBy === 'date' && <Check className="h-4 w-4" />}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFilters({ ...filters, sortBy: 'amount' })} className="flex items-center justify-between text-sm font-medium cursor-pointer">
-                  Amount {filters.sortBy === 'amount' && <Check className="h-4 w-4" />}
-                </DropdownMenuItem>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="text-[10px] uppercase text-zinc-500 font-black tracking-widest">Sort By</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => setFilters({ ...filters, sortBy: 'date' })} className="flex items-center justify-between text-sm font-medium cursor-pointer">
+                    Date {filters.sortBy === 'date' && <Check className="h-4 w-4" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setFilters({ ...filters, sortBy: 'amount' })} className="flex items-center justify-between text-sm font-medium cursor-pointer">
+                    Amount {filters.sortBy === 'amount' && <Check className="h-4 w-4" />}
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuLabel className="text-[10px] uppercase text-zinc-500 font-black tracking-widest">Order</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => setFilters({ ...filters, sortOrder: 'desc' })} className="flex items-center justify-between text-sm font-medium cursor-pointer">
-                  Newest / Highest {filters.sortOrder === 'desc' && <Check className="h-4 w-4" />}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFilters({ ...filters, sortOrder: 'asc' })} className="flex items-center justify-between text-sm font-medium cursor-pointer">
-                  Oldest / Lowest {filters.sortOrder === 'asc' && <Check className="h-4 w-4" />}
-                </DropdownMenuItem>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="text-[10px] uppercase text-zinc-500 font-black tracking-widest">Order</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => setFilters({ ...filters, sortOrder: 'desc' })} className="flex items-center justify-between text-sm font-medium cursor-pointer">
+                    Newest / Highest {filters.sortOrder === 'desc' && <Check className="h-4 w-4" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setFilters({ ...filters, sortOrder: 'asc' })} className="flex items-center justify-between text-sm font-medium cursor-pointer">
+                    Oldest / Lowest {filters.sortOrder === 'asc' && <Check className="h-4 w-4" />}
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

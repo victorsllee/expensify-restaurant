@@ -11,6 +11,7 @@ import { useUpload } from '../contexts/UploadContext';
 export default function Capture() {
   const navigate = useNavigate();
   const { uploadFiles } = useUpload();
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -80,29 +81,42 @@ export default function Capture() {
             
             <div className="flex gap-4 w-full max-w-sm">
               <button 
-                onClick={() => fileInputRef.current?.click()}
-                className="flex-1 flex flex-col items-center gap-3 bg-zinc-100 dark:bg-zinc-900 p-6 rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-800/80 transition-colors"
+                onClick={() => cameraInputRef.current?.click()}
+                className="flex-1 flex flex-col items-center gap-3 bg-zinc-100 dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-800/80 transition-all active:scale-95 group"
               >
-                <Camera size={32} className="text-zinc-700 dark:text-zinc-400" />
-                <span className="text-sm font-medium text-zinc-900 dark:text-zinc-300">Camera</span>
+                <div className="p-3 bg-white dark:bg-zinc-800 rounded-xl shadow-sm group-hover:shadow-md transition-all">
+                  <Camera size={28} className="text-zinc-900 dark:text-zinc-50" />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-widest text-zinc-900 dark:text-zinc-300">Camera</span>
               </button>
               
               <button 
                 onClick={() => fileInputRef.current?.click()}
-                className="flex-1 flex flex-col items-center gap-3 bg-white dark:bg-zinc-950 p-6 rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
+                className="flex-1 flex flex-col items-center gap-3 bg-zinc-100 dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-800/80 transition-all active:scale-95 group"
               >
-                <Upload size={32} className="text-zinc-600 dark:text-zinc-400" />
-                <span className="text-sm font-medium text-zinc-900 dark:text-zinc-300">Bulk Upload</span>
+                <div className="p-3 bg-white dark:bg-zinc-800 rounded-xl shadow-sm group-hover:shadow-md transition-all">
+                   <Upload size={28} className="text-zinc-900 dark:text-zinc-50" />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-widest text-zinc-900 dark:text-zinc-300">Upload</span>
               </button>
             </div>
             
-            {/* Hidden Input. capture="environment" prefers rear camera on mobile */}
+            {/* Camera Input */}
+            <input 
+              type="file" 
+              ref={cameraInputRef} 
+              className="hidden" 
+              accept="image/*"
+              capture="environment" 
+              onChange={handleMultipleUpload}
+            />
+
+            {/* File Input */}
             <input 
               type="file" 
               ref={fileInputRef} 
               className="hidden" 
               accept="image/*,application/pdf"
-              capture="environment" 
               multiple
               onChange={handleMultipleUpload}
             />

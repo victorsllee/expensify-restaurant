@@ -1,9 +1,1291 @@
 INFO:     Will watch for changes in these directories: ['/Users/victorsllee/expensify-workspace/backend']
-INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [62287] using StatReload
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [63779] using StatReload
 /Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
 * 'orm_mode' has been renamed to 'from_attributes'
   warnings.warn(message, UserWarning)
-INFO:     Started server process [62289]
+INFO:     Started server process [63782]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
+INFO:     127.0.0.1:49686 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49685 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49682 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49702 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49685 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49686 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49686 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49704 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49793 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49801 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49853 - "OPTIONS /api/zoho/resync/14 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49853 - "POST /api/zoho/resync/14 HTTP/1.1" 200 OK
+[ZOHO SYNC] Processing receipt 14 for user XHPCmSSmecTqQl9pv4QjZBv28gm1
+[ZOHO SYNC] Fetching available currencies from Zoho...
+[ZOHO SYNC] Found 13 currencies.
+[ZOHO SYNC] Attachment prepared: receipt_14.pdf
+[ZOHO SYNC] Payload constructed: {"date": "2026-04-15", "amount": 6081150.0, "merchant_name": "C\u00d4NG TY TNHH FOOD SOURCE INTERNATIONAL (VI\u1ec6T NAM)", "currency_id": "7428374000000093124", "tax_amount": 334150.0, "description": "Rump", "category_name": "Frozen"}
+[ZOHO SYNC] Success! Receipt 14 marked as synced. Zoho ID: 7428374000000849028
+INFO:     127.0.0.1:49863 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49891 - "OPTIONS /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49893 - "OPTIONS /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49894 - "OPTIONS /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49896 - "OPTIONS /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49897 - "OPTIONS /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49899 - "OPTIONS /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49891 - "OPTIONS /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49893 - "OPTIONS /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49894 - "OPTIONS /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49896 - "OPTIONS /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49896 - "POST /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49891 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49897 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49899 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49897 - "POST /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49899 - "POST /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49897 - "POST /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49894 - "POST /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49896 - "POST /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49891 - "POST /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49897 - "POST /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49894 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49896 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49891 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49899 - "POST /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49893 - "POST /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50042 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50041 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50045 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50042 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50040 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50042 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50065 - "OPTIONS /api/review/bulk-delete HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50065 - "DELETE /api/review/bulk-delete HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50149 - "OPTIONS /api/review/26 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50149 - "PUT /api/review/26 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50159 - "OPTIONS /api/review/26/approve HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50159 - "PUT /api/review/26/approve HTTP/1.1" 200 OK
+[ZOHO SYNC] Processing receipt 26 for user XHPCmSSmecTqQl9pv4QjZBv28gm1
+[ZOHO SYNC] Attachment prepared: receipt_26.jpg
+[ZOHO SYNC] Payload constructed: {"date": "2026-04-16", "amount": 425000.0, "merchant_name": "Q - MART", "currency_id": "7428374000000093124", "tax_amount": 0.0, "description": "seasonings and peas", "category_name": "Dry"}
+[ZOHO SYNC] Success! Receipt 26 marked as synced. Zoho ID: 7428374000000851003
+[AI LEARNING] Error during learning: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "_user_keyword_category_uc"
+DETAIL:  Key (user_id, keyword, category_id)=(XHPCmSSmecTqQl9pv4QjZBv28gm1, 20gr, 21) already exists.
+
+[SQL: INSERT INTO category_learnings (user_id, keyword, category_id, frequency) SELECT p0::VARCHAR, p1::VARCHAR, p2::INTEGER, p3::INTEGER FROM (VALUES (%(user_id__0)s, %(keyword__0)s, %(category_id__0)s, %(frequency__0)s, 0), (%(user_id__1)s, %(keyword__1) ... 1549 characters truncated ... 3, sen_counter) ORDER BY sen_counter RETURNING category_learnings.id, category_learnings.id AS id__1]
+[parameters: {'category_id__0': 11, 'user_id__0': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__0': 'lnh', 'frequency__0': 1, 'category_id__1': 11, 'user_id__1': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__1': 'lan', 'frequency__1': 1, 'category_id__2': 11, 'user_id__2': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__2': '1kg', 'frequency__2': 1, 'category_id__3': 11, 'user_id__3': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__3': 'dujardin', 'frequency__3': 1, 'category_id__4': 21, 'user_id__4': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__4': 'ngt', 'frequency__4': 1, 'category_id__5': 21, 'user_id__5': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__5': 'sweet', 'frequency__5': 1, 'category_id__6': 21, 'user_id__6': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__6': 'paprika', 'frequency__6': 1, 'category_id__7': 21, 'user_id__7': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__7': '20grkg', 'frequency__7': 1, 'category_id__8': 21, 'user_id__8': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__8': '20gr', 'frequency__8': 1, 'category_id__9': 21, 'user_id__9': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__9': '500ml', 'frequency__9': 1, 'category_id__10': 21, 'user_id__10': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__10': 'garden', 'frequency__10': 1, 'category_id__11': 21, 'user_id__11': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__11': 'chai', 'frequency__11': 1, 'category_id__12': 21, 'user_id__12': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__12': 'american', 'frequency__12': 1, 'category_id__13': 21, 'user_id__13': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__13': 'us009', 'frequency__13': 1, 'category_id__14': 21, 'user_id__14': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__14': 'gim', 'frequency__14': 1, 'category_id__15': 21, 'user_id__15': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__15': 'gii', 'frequency__15': 1, 'category_id__16': 21, 'user_id__16': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__16': '20gr', 'frequency__16': 1, 'category_id__17': 21, 'user_id__17': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__17': 'oregano', 'frequency__17': 1, 'category_id__18': 21, 'user_id__18': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__18': '20grkg', 'frequency__18': 1, 'category_id__19': 21, 'user_id__19': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__19': 'rubbed', 'frequency__19': 1, 'category_id__20': 21, 'user_id__20': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__20': 'kinh', 'frequency__20': 1}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+INFO:     127.0.0.1:50186 - "OPTIONS /api/review/24 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50186 - "PUT /api/review/24 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50186 - "OPTIONS /api/review/24/approve HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50186 - "PUT /api/review/24/approve HTTP/1.1" 200 OK
+[ZOHO SYNC] Processing receipt 24 for user XHPCmSSmecTqQl9pv4QjZBv28gm1
+[ZOHO SYNC] Attachment prepared: receipt_24.png
+[ZOHO SYNC] Payload constructed: {"date": "2026-04-16", "amount": 20000.0, "merchant_name": "Q - MART", "currency_id": "7428374000000093124", "tax_amount": 0.0, "description": "onion powder", "category_name": "Dry"}
+[ZOHO SYNC] Success! Receipt 24 marked as synced. Zoho ID: 7428374000000849048
+[AI LEARNING] Successfully learned from receipt 24
+INFO:     127.0.0.1:50208 - "OPTIONS /api/review/23 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50208 - "PUT /api/review/23 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50208 - "OPTIONS /api/review/23/approve HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50208 - "PUT /api/review/23/approve HTTP/1.1" 200 OK
+[ZOHO SYNC] Processing receipt 23 for user XHPCmSSmecTqQl9pv4QjZBv28gm1
+[ZOHO SYNC] Attachment prepared: receipt_23.png
+[ZOHO SYNC] Payload constructed: {"date": "2026-04-16", "amount": 70000.0, "merchant_name": "TECHCOMBANK", "currency_id": "7428374000000093124", "tax_amount": 0.0, "description": "staff dinner com tam", "category_name": "Staff"}
+INFO:     127.0.0.1:50234 - "OPTIONS /api/review/22 HTTP/1.1" 200 OK
+[ZOHO SYNC] Success! Receipt 23 marked as synced. Zoho ID: 7428374000000850025
+INFO:     127.0.0.1:50234 - "PUT /api/review/22 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50234 - "OPTIONS /api/review/22/approve HTTP/1.1" 200 OK
+[AI LEARNING] Successfully learned from receipt 23
+INFO:     127.0.0.1:50234 - "PUT /api/review/22/approve HTTP/1.1" 200 OK
+[ZOHO SYNC] Processing receipt 22 for user XHPCmSSmecTqQl9pv4QjZBv28gm1
+[ZOHO SYNC] Attachment prepared: receipt_22.png
+[ZOHO SYNC] Payload constructed: {"date": "2026-04-16", "amount": 122400.0, "merchant_name": "LTM VUNGTAU WEB", "currency_id": "7428374000000093124", "tax_amount": 0.0, "description": "lettuce", "category_name": "Vegetables"}
+[ZOHO SYNC] Success! Receipt 22 marked as synced. Zoho ID: 7428374000000849068
+[AI LEARNING] Successfully learned from receipt 22
+INFO:     127.0.0.1:50271 - "OPTIONS /api/review/21 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50271 - "PUT /api/review/21 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50282 - "PUT /api/review/21 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50282 - "OPTIONS /api/review/21/approve HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50282 - "PUT /api/review/21/approve HTTP/1.1" 200 OK
+[ZOHO SYNC] Processing receipt 21 for user XHPCmSSmecTqQl9pv4QjZBv28gm1
+[ZOHO SYNC] Attachment prepared: receipt_21.jpg
+[ZOHO SYNC] Payload constructed: {"date": "2026-04-17", "amount": 842400.0, "merchant_name": "Goodfood", "currency_id": "7428374000000093124", "tax_amount": 62400.0, "description": "brie cheese", "category_name": "Dairy"}
+[ZOHO SYNC] Success! Receipt 21 marked as synced. Zoho ID: 7428374000000850047
+[AI LEARNING] Successfully learned from receipt 21
+INFO:     127.0.0.1:50295 - "OPTIONS /api/review/20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50295 - "PUT /api/review/20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50295 - "OPTIONS /api/review/20/approve HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50295 - "PUT /api/review/20/approve HTTP/1.1" 200 OK
+[ZOHO SYNC] Processing receipt 20 for user XHPCmSSmecTqQl9pv4QjZBv28gm1
+[ZOHO SYNC] Attachment prepared: receipt_20.jpg
+[ZOHO SYNC] Payload constructed: {"date": "2026-04-15", "amount": 1375920.0, "merchant_name": "Goodfood Co., Ltd", "currency_id": "7428374000000093124", "tax_amount": 101920.0, "description": "olives", "category_name": "Dry"}
+[ZOHO SYNC] Success! Receipt 20 marked as synced. Zoho ID: 7428374000000851025
+[AI LEARNING] Successfully learned from receipt 20
+INFO:     127.0.0.1:50324 - "OPTIONS /api/review/19 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50324 - "PUT /api/review/19 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50324 - "OPTIONS /api/review/19/approve HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50324 - "PUT /api/review/19/approve HTTP/1.1" 200 OK
+[ZOHO SYNC] Processing receipt 19 for user XHPCmSSmecTqQl9pv4QjZBv28gm1
+[ZOHO SYNC] Attachment prepared: receipt_19.jpg
+[ZOHO SYNC] Payload constructed: {"date": "2026-04-16", "amount": 927000.0, "merchant_name": "Vinh Phuong Anh", "currency_id": "7428374000000093124", "tax_amount": 0.0, "description": "flour", "category_name": "Dry"}
+[ZOHO SYNC] Success! Receipt 19 marked as synced. Zoho ID: 7428374000000849088
+[AI LEARNING] Successfully learned from receipt 19
+INFO:     127.0.0.1:50341 - "OPTIONS /api/review/18 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50341 - "PUT /api/review/18 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50341 - "OPTIONS /api/review/18/approve HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50341 - "PUT /api/review/18/approve HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50341 - "OPTIONS /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50350 - "OPTIONS /api/history HTTP/1.1" 200 OK
+[ZOHO SYNC] Processing receipt 18 for user XHPCmSSmecTqQl9pv4QjZBv28gm1
+[ZOHO SYNC] Attachment prepared: receipt_18.jpg
+[ZOHO SYNC] Payload constructed: {"date": "2026-04-16", "amount": 687000.0, "merchant_name": "TECHCOMBANK", "currency_id": "7428374000000093124", "tax_amount": 0.0, "description": "vegetables", "category_name": "Vegetables"}
+[ZOHO SYNC] Success! Receipt 18 marked as synced. Zoho ID: 7428374000000850069
+[AI LEARNING] Successfully learned from receipt 18
+INFO:     127.0.0.1:50341 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50375 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50538 - "GET /api/history HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/uvicorn/protocols/http/h11_impl.py", line 415, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/fastapi/applications.py", line 1163, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/middleware/cors.py", line 96, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/middleware/cors.py", line 154, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/fastapi/routing.py", line 134, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/fastapi/routing.py", line 120, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/fastapi/routing.py", line 674, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/fastapi/routing.py", line 330, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/concurrency.py", line 32, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/anyio/to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 2518, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 1002, in run
+    result = context.run(func, *args)
+  File "/Users/victorsllee/expensify-workspace/backend/app/api/history.py", line 32, in get_history
+    line_items = db.query(models.LineItem).filter(models.LineItem.receipt_id == r.id).all()
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/orm/query.py", line 2711, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/orm/query.py", line 2864, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py", line 2351, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py", line 2249, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/sql/elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+[SQL: SELECT line_items.id AS line_items_id, line_items.receipt_id AS line_items_receipt_id, line_items.category_id AS line_items_category_id, line_items.description AS line_items_description, line_items.amount AS line_items_amount 
+FROM line_items 
+WHERE line_items.receipt_id = %(receipt_id_1)s]
+[parameters: {'receipt_id_1': 20}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+INFO:     127.0.0.1:50555 - "GET /api/history HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/uvicorn/protocols/http/h11_impl.py", line 415, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/fastapi/applications.py", line 1163, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/middleware/cors.py", line 96, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/middleware/cors.py", line 154, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/fastapi/routing.py", line 134, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/fastapi/routing.py", line 120, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/fastapi/routing.py", line 674, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/fastapi/routing.py", line 330, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/concurrency.py", line 32, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/anyio/to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 2518, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 1002, in run
+    result = context.run(func, *args)
+  File "/Users/victorsllee/expensify-workspace/backend/app/api/history.py", line 23, in get_history
+    vendor = db.query(models.Vendor).filter(models.Vendor.id == r.vendor_id).first()
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/orm/query.py", line 2766, in first
+    return self.limit(1)._iter().first()  # type: ignore
+           ~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/orm/query.py", line 2864, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py", line 2351, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py", line 2249, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/sql/elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+[SQL: SELECT vendors.id AS vendors_id, vendors.user_id AS vendors_user_id, vendors.name AS vendors_name, vendors.default_category AS vendors_default_category, vendors.last_seen_at AS vendors_last_seen_at 
+FROM vendors 
+WHERE vendors.id = %(id_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'id_1': 19, 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+INFO:     127.0.0.1:52045 - "OPTIONS /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52047 - "OPTIONS /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52047 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52082 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52289 - "OPTIONS /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52292 - "OPTIONS /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52294 - "OPTIONS /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52295 - "OPTIONS /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52297 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52295 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52289 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52289 - "OPTIONS /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52294 - "OPTIONS /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52297 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52289 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52294 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52295 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52297 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52294 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52297 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52318 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52317 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52317 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52318 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52297 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52318 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52288 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52318 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52366 - "OPTIONS /api/vendors HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52370 - "OPTIONS /api/vendors HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52320 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52369 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52320 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52370 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52372 - "GET /api/vendors HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52370 - "GET /api/vendors HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52404 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52401 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52410 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52404 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52403 - "GET /api/vendors HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52404 - "GET /api/vendors HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/uvicorn/protocols/http/h11_impl.py", line 415, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/fastapi/applications.py", line 1163, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/middleware/cors.py", line 96, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/middleware/cors.py", line 154, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/fastapi/routing.py", line 134, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/fastapi/routing.py", line 120, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/fastapi/routing.py", line 674, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/fastapi/routing.py", line 330, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/starlette/concurrency.py", line 32, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/anyio/to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 2518, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 1002, in run
+    result = context.run(func, *args)
+  File "/Users/victorsllee/expensify-workspace/backend/app/api/vendors.py", line 31, in get_vendors
+    receipt_count = db.query(models.Receipt).filter(models.Receipt.vendor_id == v.id).count()
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/orm/query.py", line 3153, in count
+    self._legacy_from_self(col).enable_eagerloads(False).scalar()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/orm/query.py", line 2842, in scalar
+    ret = self.one()
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/orm/query.py", line 2815, in one
+    return self._iter().one()  # type: ignore
+           ~~~~~~~~~~^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/orm/query.py", line 2864, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py", line 2351, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py", line 2249, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/sql/elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+[SQL: SELECT count(*) AS count_1 
+FROM (SELECT receipts.id AS receipts_id, receipts.user_id AS receipts_user_id, receipts.image_url AS receipts_image_url, receipts.vendor_id AS receipts_vendor_id, receipts.main_category_id AS receipts_main_category_id, receipts.currency AS receipts_currency, receipts.total_amount AS receipts_total_amount, receipts.tax_amount AS receipts_tax_amount, receipts.date AS receipts_date, receipts.status AS receipts_status, receipts.error_message AS receipts_error_message, receipts.description AS receipts_description, receipts.track_line_items AS receipts_track_line_items, receipts.zoho_expense_id AS receipts_zoho_expense_id, receipts.created_at AS receipts_created_at 
+FROM receipts 
+WHERE receipts.vendor_id = %(vendor_id_1)s) AS anon_1]
+[parameters: {'vendor_id_1': 6}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+INFO:     127.0.0.1:55269 - "OPTIONS /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55271 - "OPTIONS /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55273 - "OPTIONS /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55271 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55273 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55271 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55306 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55308 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55273 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55308 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55271 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55358 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55502 - "OPTIONS /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55505 - "OPTIONS /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55503 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55502 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55505 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55503 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55499 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55503 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55545 - "OPTIONS /api/review/bulk-delete HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55545 - "DELETE /api/review/bulk-delete HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57020 - "OPTIONS /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57021 - "OPTIONS /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57020 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57034 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57104 - "OPTIONS /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57108 - "OPTIONS /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57109 - "OPTIONS /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57111 - "OPTIONS /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57113 - "OPTIONS /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57114 - "OPTIONS /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57104 - "OPTIONS /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57108 - "OPTIONS /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57109 - "OPTIONS /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57111 - "OPTIONS /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57113 - "OPTIONS /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57114 - "OPTIONS /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57109 - "POST /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57113 - "POST /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57114 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57109 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57111 - "POST /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57108 - "POST /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57104 - "POST /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57113 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57109 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57111 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57114 - "POST /api/receipts/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57108 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57242 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57241 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57242 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57244 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57240 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57244 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57264 - "OPTIONS /api/review/33 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57264 - "PUT /api/review/33 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57276 - "OPTIONS /api/review/32 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57276 - "PUT /api/review/32 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57284 - "OPTIONS /api/review/31 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57284 - "PUT /api/review/31 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57293 - "OPTIONS /api/review/30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57293 - "PUT /api/review/30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57308 - "OPTIONS /api/review/29 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57308 - "PUT /api/review/29 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57322 - "OPTIONS /api/review/28 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57322 - "PUT /api/review/28 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57331 - "PUT /api/review/28 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57338 - "OPTIONS /api/review/bulk-approve HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57338 - "PUT /api/review/bulk-approve HTTP/1.1" 200 OK
+[ZOHO SYNC] Processing receipt 33 for user XHPCmSSmecTqQl9pv4QjZBv28gm1
+[ZOHO SYNC] Attachment prepared: receipt_33.png
+[ZOHO SYNC] Payload constructed: {"date": "2026-04-17", "amount": 20000.0, "merchant_name": "HO KINH DOANH GAO MIEN TAY 1989", "currency_id": "7428374000000093124", "tax_amount": 0.0, "description": "fruits", "category_name": "Drinks"}
+[ZOHO SYNC] Success! Receipt 33 marked as synced. Zoho ID: 7428374000000855004
+[AI LEARNING] Successfully learned from receipt 33
+[ZOHO SYNC] Processing receipt 32 for user XHPCmSSmecTqQl9pv4QjZBv28gm1
+[ZOHO SYNC] Attachment prepared: receipt_32.jpg
+[ZOHO SYNC] Payload constructed: {"date": "2026-04-17", "amount": 302400.0, "merchant_name": "BBQ \u00d4NG M\u1eacP V\u0168NG T\u00c0U", "currency_id": "7428374000000093124", "tax_amount": 22400.0, "description": "staff dinner korean", "category_name": "Staff"}
+[ZOHO SYNC] Success! Receipt 32 marked as synced. Zoho ID: 7428374000000855026
+[AI LEARNING] Successfully learned from receipt 32
+[ZOHO SYNC] Processing receipt 31 for user XHPCmSSmecTqQl9pv4QjZBv28gm1
+[ZOHO SYNC] Attachment prepared: receipt_31.jpg
+[ZOHO SYNC] Payload constructed: {"date": "2026-04-17", "amount": 100000.0, "merchant_name": "Q - MART", "currency_id": "7428374000000093124", "tax_amount": 0.0, "description": "wine for lamb stew", "category_name": "Dry"}
+[ZOHO SYNC] Success! Receipt 31 marked as synced. Zoho ID: 7428374000000857003
+[AI LEARNING] Successfully learned from receipt 31
+[ZOHO SYNC] Processing receipt 30 for user XHPCmSSmecTqQl9pv4QjZBv28gm1
+[ZOHO SYNC] Attachment prepared: receipt_30.jpg
+[ZOHO SYNC] Payload constructed: {"date": "2026-04-17", "amount": 345000.0, "merchant_name": "Phu S\u1ef9", "currency_id": "7428374000000093124", "tax_amount": 0.0, "description": "eggs", "category_name": "Dairy"}
+[ZOHO SYNC] Success! Receipt 30 marked as synced. Zoho ID: 7428374000000858005
+[AI LEARNING] Successfully learned from receipt 30
+[ZOHO SYNC] Processing receipt 29 for user XHPCmSSmecTqQl9pv4QjZBv28gm1
+[ZOHO SYNC] Attachment prepared: receipt_29.png
+[ZOHO SYNC] Payload constructed: {"date": "2026-04-17", "amount": 162000.0, "merchant_name": "HKD BAO BI VUNG TAU", "currency_id": "7428374000000093124", "tax_amount": 0.0, "description": "takeaway packaging", "category_name": "Supplies"}
+[ZOHO SYNC] Success! Receipt 29 marked as synced. Zoho ID: 7428374000000857027
+[AI LEARNING] Error during learning: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "_user_keyword_category_uc"
+DETAIL:  Key (user_id, keyword, category_id)=(XHPCmSSmecTqQl9pv4QjZBv28gm1, bao, 17) already exists.
+
+[SQL: INSERT INTO category_learnings (user_id, keyword, category_id, frequency) SELECT p0::VARCHAR, p1::VARCHAR, p2::INTEGER, p3::INTEGER FROM (VALUES (%(user_id__0)s, %(keyword__0)s, %(category_id__0)s, %(frequency__0)s, 0), (%(user_id__1)s, %(keyword__1) ... 594 characters truncated ... 3, sen_counter) ORDER BY sen_counter RETURNING category_learnings.id, category_learnings.id AS id__1]
+[parameters: {'category_id__0': 17, 'user_id__0': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__0': 'bao', 'frequency__0': 1, 'category_id__1': 17, 'user_id__1': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__1': 'tau', 'frequency__1': 1, 'category_id__2': 17, 'user_id__2': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__2': 'vung', 'frequency__2': 1, 'category_id__3': 17, 'user_id__3': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__3': 'hkd', 'frequency__3': 1, 'category_id__4': 17, 'user_id__4': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__4': 'bao', 'frequency__4': 1, 'category_id__5': 17, 'user_id__5': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__5': 'hkd', 'frequency__5': 1, 'category_id__6': 17, 'user_id__6': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__6': 'tau', 'frequency__6': 1, 'category_id__7': 17, 'user_id__7': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__7': 'vung', 'frequency__7': 1, 'category_id__8': 17, 'user_id__8': 'XHPCmSSmecTqQl9pv4QjZBv28gm1', 'keyword__8': 'khon', 'frequency__8': 1}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+[ZOHO SYNC] Processing receipt 28 for user XHPCmSSmecTqQl9pv4QjZBv28gm1
+[ZOHO SYNC] Attachment prepared: receipt_28.jpg
+[ZOHO SYNC] Payload constructed: {"date": "2026-10-17", "amount": 556000.0, "merchant_name": "KIM Y\u1ebeN", "currency_id": "7428374000000093124", "tax_amount": 0.0, "description": "aqua and rice", "category_name": "Drinks"}
+[ZOHO SYNC] Success! Receipt 28 marked as synced. Zoho ID: 7428374000000857047
+[AI LEARNING] Successfully learned from receipt 28
+INFO:     127.0.0.1:60216 - "OPTIONS /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60218 - "OPTIONS /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60221 - "OPTIONS /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60222 - "OPTIONS /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60224 - "OPTIONS /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60226 - "OPTIONS /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60218 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60226 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60216 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60226 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60224 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60218 - "GET /api/categories HTTP/1.1" 200 OK
+WARNING:  StatReload detected changes in 'app/main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [63782]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+Process SpawnProcess-2:
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.13/3.13.4/Frameworks/Python.framework/Versions/3.13/lib/python3.13/multiprocessing/process.py", line 313, in _bootstrap
+    self.run()
+    ~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.4/Frameworks/Python.framework/Versions/3.13/lib/python3.13/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/uvicorn/_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+    ~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/uvicorn/server.py", line 75, in run
+    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())
+  File "/opt/homebrew/Cellar/python@3.13/3.13.4/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.4/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.4/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/uvicorn/server.py", line 79, in serve
+    await self._serve(sockets)
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/uvicorn/server.py", line 86, in _serve
+    config.load()
+    ~~~~~~~~~~~^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/uvicorn/config.py", line 441, in load
+    self.loaded_app = import_from_string(self.app)
+                      ~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+  File "/opt/homebrew/Cellar/python@3.13/3.13.4/Frameworks/Python.framework/Versions/3.13/lib/python3.13/importlib/__init__.py", line 88, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/Users/victorsllee/expensify-workspace/backend/app/main.py", line 14, in <module>
+    cred = credentials.Certificate('firebase-adminsdk.json')
+           ^^^^^^^^^^^
+NameError: name 'credentials' is not defined
+WARNING:  StatReload detected changes in 'app/main.py'. Reloading...
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [77154]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'app/main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [77154]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [82689]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'app/api/receipts.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [82689]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [82732]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'app/models/models.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [82732]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [84461]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'app/models/models.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [84461]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [84513]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'app/api/history.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [84513]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [84573]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'app/api/review.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [84573]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [84625]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'app/api/review.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [84625]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [84689]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'app/api/receipts.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [84689]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [18939]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'app/api/receipts.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [18939]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [19033]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'app/api/receipts.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [19033]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [45368]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'app/api/review.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [45368]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [45560]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'app/api/review.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [45560]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [47557]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'test_vertex.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [47557]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [48909]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'test_vertex.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [48909]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [49112]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'test_vertex.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [49112]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [49307]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'test_vertex.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [49307]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [49858]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'test_vertex_v2.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [49858]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [50711]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'app/api/receipts.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [50711]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [72399]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'test_api_key.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [72399]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [79581]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'list_models.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [79581]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [80058]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'list_models.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [80058]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [80364]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'list_models.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [80364]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [80462]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'test_api_key.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [80462]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [80765]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'test_api_key.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [80765]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [80971]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'test_api_key.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [80971]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [81574]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'list_models.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [81574]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [81777]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'test_api_key.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [81777]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [81988]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'test_api_key.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [81988]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [82092]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'app/api/receipts.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [82092]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [82297]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'app/api/receipts.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [82297]
+/Users/victorsllee/expensify-workspace/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:383: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO:     Started server process [90692]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:60387 - "OPTIONS /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60389 - "OPTIONS /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60391 - "OPTIONS /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60393 - "OPTIONS /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60395 - "OPTIONS /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60396 - "OPTIONS /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60393 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60391 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60387 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60387 - "OPTIONS /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60395 - "OPTIONS /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60391 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60387 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60396 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60387 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60391 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60393 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60396 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60391 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60396 - "GET /api/review/queue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60440 - "OPTIONS /api/review/bulk-delete HTTP/1.1" 200 OK

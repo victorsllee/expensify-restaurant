@@ -6,11 +6,13 @@ export default function MainLayout() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
       <SideNav />
-      <main className="md:ml-64">
-        <div className="pb-16 md:pb-0">
+      <BottomNav />
+      <main className="md:ml-80">
+        <div className="pb-24 md:pb-8">
           <Outlet />
         </div>
       </main>
+
       <BottomNav />
     </div>
   );
