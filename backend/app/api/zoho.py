@@ -8,17 +8,62 @@ from app.api.auth import verify_token
 from app.database import get_db
 from app.models import models
 
+from app.services.zoho import push_receipt_to_zoho, get_zoho_access_token, get_zoho_merchants
+
 router = APIRouter()
 
 ZOHO_CLIENT_ID = os.environ.get("ZOHO_CLIENT_ID", "").strip('\"\'')
 ZOHO_CLIENT_SECRET = os.environ.get("ZOHO_CLIENT_SECRET", "").strip('\"\'')
-# e.g., http://localhost:5173/settings
 ZOHO_REDIRECT_URI = os.environ.get("ZOHO_REDIRECT_URI", "http://localhost:5173/settings").strip('\"\'')
-
-# Scope required for Zoho Expense
 ZOHO_SCOPE = "ZohoExpense.fullaccess.all"
 
+@router.get("/merchants")
+def list_zoho_merchants(user: dict = Depends(verify_token), db: Session = Depends(get_db)):
+    """Fetches merchants from Zoho API."""
+    settings = db.query(models.UserSettings).filter(models.UserSettings.user_id == user['uid']).first()
+    if not settings or not settings.zoho_refresh_token:
+        raise HTTPException(status_code=400, detail="Zoho not connected")
+    
+    try:
+        access_token = get_zoho_access_token(settings.zoho_refresh_token)
+        merchants = get_zoho_merchants(access_token)
+        return {"status": "success", "data": merchants}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/merchants/sync")
+def sync_zoho_merchants(user: dict = Depends(verify_token), db: Session = Depends(get_db)):
+    """Fetches merchants from Zoho and auto-maps existing local vendors by name."""
+    settings = db.query(models.UserSettings).filter(models.UserSettings.user_id == user['uid']).first()
+    if not settings or not settings.zoho_refresh_token:
+        raise HTTPException(status_code=400, detail="Zoho not connected")
+    
+    try:
+        access_token = get_zoho_access_token(settings.zoho_refresh_token)
+        merchants = get_zoho_merchants(access_token)
+        
+        # Local vendors
+        local_vendors = db.query(models.Vendor).filter(models.Vendor.user_id == user['uid']).all()
+        
+        synced_count = 0
+        for zm in merchants:
+            z_name = zm['merchant_name'].lower().strip()
+            z_id = zm['merchant_id']
+            
+            # Find exact match
+            for lv in local_vendors:
+                if lv.name.lower().strip() == z_name:
+                    if lv.zoho_merchant_id != z_id:
+                        lv.zoho_merchant_id = z_id
+                        synced_count += 1
+        
+        db.commit()
+        return {"status": "success", "message": f"Successfully matched {synced_count} vendors from Zoho."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/auth-url")
+
 def get_zoho_auth_url():
     """Returns the URL the frontend should redirect the user to for Zoho OAuth"""
     if not ZOHO_CLIENT_ID:

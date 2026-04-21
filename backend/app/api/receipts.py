@@ -89,6 +89,18 @@ def process_receipt_async(receipt_id: int, image_bytes: bytes, mime_type: str, u
         
         vendors = db.query(models.Vendor).filter(models.Vendor.user_id == user_id).all()
         vendor_names = [v.name for v in vendors]
+
+        # Fetch Zoho Merchants if connected
+        zoho_merchant_names = []
+        user_settings = db.query(models.UserSettings).filter(models.UserSettings.user_id == user_id).first()
+        if user_settings and user_settings.zoho_integration_enabled and user_settings.zoho_refresh_token:
+            try:
+                from app.services.zoho import get_zoho_access_token, get_zoho_merchants
+                access_token = get_zoho_access_token(user_settings.zoho_refresh_token)
+                merchants = get_zoho_merchants(access_token)
+                zoho_merchant_names = [m['merchant_name'] for m in merchants]
+            except Exception as zoho_err:
+                print(f"Warning: Could not fetch Zoho merchants for context: {zoho_err}")
         
         # Get learned mappings from memory (top frequency)
         learnings = db.query(models.CategoryLearning).filter(
@@ -115,7 +127,9 @@ CRITICAL CONTEXT & RULES:
    - Do NOT invent new categories.
 3. EXISTING VENDORS: {json.dumps(vendor_names)}
    - If the receipt vendor is a variation or typo of one of these, use the EXACT name from this list.
-4. LEARNED BEHAVIOR (HINTS): {json.dumps(learned_hints)}
+4. ZOHO OFFICIAL MERCHANTS: {json.dumps(zoho_merchant_names)}
+   - If the receipt vendor matches or is very similar to a name in this list, PRIORITIZE the name from this Zoho list.
+5. LEARNED BEHAVIOR (HINTS): {json.dumps(learned_hints)}
    - If a line item description contains one of these keywords, prioritize the associated category.
 
 Extract:

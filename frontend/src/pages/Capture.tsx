@@ -1,59 +1,77 @@
-import { useState, useRef } from 'react';
-import { Camera, Upload, ArrowLeft, Loader2, CheckCircle } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { Camera, Upload, ArrowLeft, MousePointerClick } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import api from '../lib/api';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-
 import { useUpload } from '../contexts/UploadContext';
 
 export default function Capture() {
   const navigate = useNavigate();
   const { uploadFiles } = useUpload();
+  
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [result, setResult] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
+  
+  const [isDragging, setIsDragging] = useState(false);
 
+  // Handle file selection (shared logic)
+  const processFiles = useCallback(async (files: File[]) => {
+    if (files.length === 0) return;
+    
+    // Filter for images and PDFs
+    const validFiles = files.filter(file => 
+      file.type.startsWith('image/') || file.type === 'application/pdf'
+    );
 
-
-  const handleUpload = async (fileToUpload?: File | React.MouseEvent) => {
-    // If it's a mouse event (from the button click), ignore it as a file
-    const isFile = fileToUpload instanceof File;
-    const file = isFile ? fileToUpload : selectedFile;
-    if (!file) return;
-
-    setIsUploading(true);
-    setError(null);
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      const response = await api.post('/receipts/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      setResult(response.data);
-    } catch (err: any) {
-      setError(err.response?.data?.detail || err.message || 'Upload failed');
-    } finally {
-      setIsUploading(false);
+    if (validFiles.length === 0) {
+      toast.error("Please upload images or PDF files only.");
+      return;
     }
+
+    uploadFiles(validFiles);
+    navigate('/review');
+  }, [uploadFiles, navigate]);
+
+  // Handle Paste
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+
+      const pastedFiles: File[] = [];
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          const blob = items[i].getAsFile();
+          if (blob) pastedFiles.push(blob);
+        }
+      }
+
+      if (pastedFiles.length > 0) {
+        toast.success(`Pasted ${pastedFiles.length} image(s) from clipboard`);
+        processFiles(pastedFiles);
+      }
+    };
+
+    window.addEventListener('paste', handlePaste);
+    return () => window.removeEventListener('paste', handlePaste);
+  }, [processFiles]);
+
+  // Handle Drag & Drop
+  const onDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
   };
 
-  const handleMultipleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
+  const onDragLeave = () => {
+    setIsDragging(false);
+  };
 
-    // Use global upload context and immediately navigate away
-    uploadFiles(files);
-    navigate('/review');
+  const onDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const files = Array.from(e.dataTransfer.files);
+    processFiles(files);
   };
 
   return (
@@ -63,156 +81,102 @@ export default function Capture() {
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="-ml-2">
           <ArrowLeft className="h-6 w-6" />
         </Button>
-        <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 ml-2">Capture Receipt</h1>
+        <h1 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 ml-2 tracking-tight">ADD RECEIPT</h1>
       </header>
 
-      <main className="flex-1 p-4 flex flex-col items-center">
-          {isUploading && !selectedFile ? (
-          <div className="flex flex-col items-center justify-center space-y-4 py-12">
-            <Loader2 className="h-12 w-12 animate-spin text-zinc-900 dark:text-zinc-50" />
-            <p className="text-zinc-500 font-medium">Uploading files...</p>
-          </div>
-        ) : !previewUrl ? (
-          <div className="flex-1 w-full flex flex-col items-center justify-center space-y-8">
-            <div className="text-center space-y-2">
-              <h2 className="text-xl font-medium text-zinc-900 dark:text-zinc-50">Snap or Upload</h2>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">Capture a clear photo of your receipt</p>
-            </div>
-            
-            <div className="flex gap-4 w-full max-w-sm">
-              <button 
-                onClick={() => cameraInputRef.current?.click()}
-                className="flex-1 flex flex-col items-center gap-3 bg-zinc-100 dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-800/80 transition-all active:scale-95 group"
-              >
-                <div className="p-3 bg-white dark:bg-zinc-800 rounded-xl shadow-sm group-hover:shadow-md transition-all">
-                  <Camera size={28} className="text-zinc-900 dark:text-zinc-50" />
-                </div>
-                <span className="text-xs font-bold uppercase tracking-widest text-zinc-900 dark:text-zinc-300">Camera</span>
-              </button>
-              
-              <button 
-                onClick={() => fileInputRef.current?.click()}
-                className="flex-1 flex flex-col items-center gap-3 bg-zinc-100 dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-800/80 transition-all active:scale-95 group"
-              >
-                <div className="p-3 bg-white dark:bg-zinc-800 rounded-xl shadow-sm group-hover:shadow-md transition-all">
-                   <Upload size={28} className="text-zinc-900 dark:text-zinc-50" />
-                </div>
-                <span className="text-xs font-bold uppercase tracking-widest text-zinc-900 dark:text-zinc-300">Upload</span>
-              </button>
-            </div>
-            
-            {/* Camera Input */}
-            <input 
-              type="file" 
-              ref={cameraInputRef} 
-              className="hidden" 
-              accept="image/*"
-              capture="environment" 
-              onChange={handleMultipleUpload}
-            />
-
-            {/* File Input */}
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              className="hidden" 
-              accept="image/*,application/pdf"
-              multiple
-              onChange={handleMultipleUpload}
-            />
-          </div>
-        ) : (
-          <div className="w-full max-w-md flex flex-col gap-6">
-            <div className="relative rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-black aspect-[3/4] flex items-center justify-center w-full">
-              {selectedFile?.type === 'application/pdf' ? (
-                <iframe src={`${previewUrl}#toolbar=0`} className="w-full h-full border-0" title="PDF Preview" />
-              ) : (
-                <img src={previewUrl || ''} alt="Receipt preview" className="max-h-full object-contain" />
-              )}
-            </div>
-
-            {error && (
-              <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md border border-destructive/20">
-                {error}
-              </div>
+      <main className="flex-1 p-6 flex flex-col items-center justify-center">
+        <div className="w-full max-w-4xl h-[500px] relative">
+          {/* Main Dropzone Area */}
+          <div 
+            onDragOver={onDragOver}
+            onDragLeave={onDragLeave}
+            onDrop={onDrop}
+            onClick={() => fileInputRef.current?.click()}
+            className={`w-full h-full border-4 border-dashed rounded-[2.5rem] flex flex-col items-center justify-center transition-all cursor-pointer group relative overflow-hidden
+              ${isDragging 
+                ? 'border-zinc-900 bg-zinc-100 dark:border-zinc-50 dark:bg-zinc-900 scale-[1.02]' 
+                : 'border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 hover:border-zinc-400 dark:hover:border-zinc-600'
+              }`}
+          >
+            {/* Background Texture/Animation for dragging */}
+            {isDragging && (
+              <div className="absolute inset-0 bg-zinc-900/5 dark:bg-zinc-50/5 animate-pulse" />
             )}
 
-            {result ? (
-              <Card>
-                <CardContent className="p-5 space-y-4">
-                  <div className="flex items-center gap-2 text-green-600 dark:text-green-500">
-                    <CheckCircle className="h-6 w-6" />
-                    <span className="font-medium">Processed Successfully</span>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-y-4 gap-x-4 text-sm">
-                    <div>
-                      <p className="text-zinc-500 dark:text-zinc-400 text-xs mb-1">Vendor</p>
-                      <p className="font-semibold text-zinc-900 dark:text-zinc-50">{result.data.vendor}</p>
-                    </div>
-                    <div>
-                      <p className="text-zinc-500 dark:text-zinc-400 text-xs mb-1">Total Amount</p>
-                      <p className="font-semibold text-zinc-900 dark:text-zinc-50">{result.data.currency}{result.data.total_amount}</p>
-                    </div>
-                    <div>
-                      <p className="text-zinc-500 dark:text-zinc-400 text-xs mb-1">Date</p>
-                      <p className="font-medium text-zinc-900 dark:text-zinc-50">{result.data.date}</p>
-                    </div>
-                    <div>
-                      <p className="text-zinc-500 dark:text-zinc-400 text-xs mb-1">Status</p>
-                      <Badge variant="outline" className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-500 hover:bg-amber-100 border-amber-200 dark:border-amber-900">
-                        {result.system_status}
-                      </Badge>
-                    </div>
-                  </div>
+            <div className="bg-zinc-100 dark:bg-zinc-900 p-8 rounded-full mb-8 group-hover:scale-110 transition-transform">
+              <Upload size={48} className={`${isDragging ? 'text-zinc-900 dark:text-zinc-50 animate-bounce' : 'text-zinc-400'}`} />
+            </div>
 
-                  <div className="pt-4 flex gap-3">
-                    <Button variant="outline" className="flex-1" onClick={() => navigate('/')}>
-                      Done
-                    </Button>
-                    <Button className="flex-1" onClick={() => {
-                      setSelectedFile(null);
-                      setPreviewUrl(null);
-                      setResult(null);
-                    }}>
-                      Scan Another
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="flex gap-3">
-                <Button 
-                  variant="outline"
-                  size="lg"
-                  className="flex-1"
-                  onClick={() => {
-                    setSelectedFile(null);
-                    setPreviewUrl(null);
-                  }}
-                  disabled={isUploading}
-                >
-                  Retake
-                </Button>
-                <Button 
-                  size="lg"
-                  className="flex-[2]"
-                  onClick={handleUpload}
-                  disabled={isUploading}
-                >
-                  {isUploading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processing AI...
-                    </>
-                  ) : (
-                    'Submit Receipt'
-                  )}
-                </Button>
+            <div className="text-center space-y-3 z-10">
+              <h2 className="text-3xl font-black tracking-tight text-zinc-900 dark:text-zinc-50">
+                Drag & Drop Receipts
+              </h2>
+              <p className="text-zinc-500 font-medium text-lg">
+                or click here to upload from your files
+              </p>
+              <div className="pt-4 flex flex-wrap justify-center gap-2">
+                <Badge variant="secondary" className="px-3 py-1 text-xs font-bold uppercase tracking-widest bg-zinc-100 dark:bg-zinc-800">Cmd + V to Paste</Badge>
+                <Badge variant="secondary" className="px-3 py-1 text-xs font-bold uppercase tracking-widest bg-zinc-100 dark:bg-zinc-800">PDF Support</Badge>
               </div>
-            )}
+            </div>
           </div>
-        )}
+
+          {/* Mobile Quick Action - Floating Camera */}
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+            <Button 
+              size="lg" 
+              variant="outline"
+              onClick={(e) => {
+                e.stopPropagation();
+                cameraInputRef.current?.click();
+              }}
+              className="h-16 rounded-2xl border-2 font-bold text-lg gap-3"
+            >
+              <Camera className="h-6 w-6" />
+              Use Camera
+            </Button>
+            
+            <Button 
+              size="lg" 
+              variant="secondary"
+              onClick={(e) => {
+                e.stopPropagation();
+                fileInputRef.current?.click();
+              }}
+              className="h-16 rounded-2xl font-bold text-lg gap-3"
+            >
+              <MousePointerClick className="h-6 w-6" />
+              Select Files
+            </Button>
+          </div>
+        </div>
+
+        {/* Hidden Inputs */}
+        <input 
+          type="file" 
+          ref={cameraInputRef} 
+          className="hidden" 
+          accept="image/*"
+          capture="environment" 
+          onChange={(e) => processFiles(Array.from(e.target.files || []))}
+        />
+
+        <input 
+          type="file" 
+          ref={fileInputRef} 
+          className="hidden" 
+          accept="image/*,application/pdf"
+          multiple
+          onChange={(e) => processFiles(Array.from(e.target.files || []))}
+        />
+
+        {/* Helpful Tip Footer */}
+        <div className="mt-20 text-center space-y-2 opacity-50 max-w-sm">
+           <p className="text-xs font-bold uppercase tracking-widest text-zinc-400">Pro Tip</p>
+           <p className="text-sm text-zinc-500 font-medium italic">
+             "Did you know? You can take a screenshot and paste it directly here to skip the file picker."
+           </p>
+        </div>
       </main>
     </div>
   );

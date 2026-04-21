@@ -13,6 +13,7 @@ router = APIRouter()
 class VendorUpdate(BaseModel):
     name: Optional[str] = None
     default_category: Optional[str] = None
+    zoho_merchant_id: Optional[str] = None
 
 class MergeRequest(BaseModel):
     primary_vendor_id: int
@@ -33,6 +34,7 @@ def get_vendors(user: dict = Depends(verify_token), db: Session = Depends(get_db
             "id": v.id,
             "name": v.name,
             "default_category": v.default_category,
+            "zoho_merchant_id": v.zoho_merchant_id,
             "receipt_count": receipt_count,
             "last_seen_at": v.last_seen_at
         })
@@ -53,6 +55,8 @@ def update_vendor(vendor_id: int, data: VendorUpdate, user: dict = Depends(verif
         vendor.name = data.name
     if data.default_category is not None:
         vendor.default_category = data.default_category
+    if data.zoho_merchant_id is not None:
+        vendor.zoho_merchant_id = data.zoho_merchant_id
         
     db.commit()
     return {"status": "success", "message": "Vendor updated"}

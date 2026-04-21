@@ -59,6 +59,21 @@ def get_zoho_currencies(access_token: str) -> List[dict]:
 from app.database import SessionLocal
 from app.models import models
 
+def get_zoho_merchants(access_token: str) -> List[dict]:
+    """Fetches the list of merchants/vendors from Zoho."""
+    print("[ZOHO] Fetching merchants from Zoho...")
+    url = "https://www.zohoapis.com/expense/v1/merchants"
+    headers = {"Authorization": f"Zoho-oauthtoken {access_token}"}
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        merchants = response.json().get("merchants", [])
+        print(f"[ZOHO] Found {len(merchants)} merchants.")
+        return merchants
+    except Exception as e:
+        print(f"[ZOHO] Error fetching merchants: {e}")
+        return []
+
 def push_receipt_to_zoho(receipt_id: int, user_id: str):
     """
     Background worker function that takes an APPROVED receipt and pushes it to Zoho Expense API.
@@ -117,16 +132,23 @@ def push_receipt_to_zoho(receipt_id: int, user_id: str):
             except Exception as img_err:
                 print(f"[ZOHO SYNC] Failed to download attachment: {img_err}")
 
+        # Prepare merchant name/id
+        merchant_name = vendor.name if vendor else "Unknown"
+        merchant_id = vendor.zoho_merchant_id if vendor else None
+
         # Zoho Expense API typically expects a specific payload format for expenses
         # Ref: https://www.zoho.com/expense/api/v1/expenses/#create-an-expense
         expense_data = {
             "date": receipt.date.strftime("%Y-%m-%d") if receipt.date else "",
             "amount": receipt.total_amount or 0.0,
-            "merchant_name": vendor.name if vendor else "Unknown",
+            "merchant_name": merchant_name,
             "currency_id": currency_id,
             "tax_amount": receipt.tax_amount or 0.0,
-            "description": receipt.description or f"Receipt from {vendor.name if vendor else 'Vendor'}"
+            "description": receipt.description or f"Receipt from {merchant_name}"
         }
+        
+        if merchant_id:
+            expense_data["merchant_id"] = merchant_id
         
         if receipt.track_line_items and line_items:
             # Zoho supports itemized expenses

@@ -39,6 +39,7 @@ class Vendor(Base):
     user_id = Column(String, index=True, nullable=False) # Multi-tenancy
     name = Column(String, index=True, nullable=False)
     default_category = Column(String, nullable=True)
+    zoho_merchant_id = Column(String, nullable=True, index=True)
     last_seen_at = Column(DateTime, default=datetime.utcnow)
 
     receipts = relationship("Receipt", back_populates="vendor")

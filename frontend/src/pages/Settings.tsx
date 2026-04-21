@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, Trash2, Plus, Users, Tags, Link2, Unlink, Check, X } from 'lucide-react';
+import { Loader2, Trash2, Plus, Users, Tags, Link2, Unlink, Check, X, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../lib/api';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 export default function Settings() {
   const [categories, setCategories] = useState<any[]>([]);
   const [vendors, setVendors] = useState<any[]>([]);
+  const [zohoMerchants, setZohoMerchants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSyncingMerchants, setIsSyncingMerchants] = useState(false);
   
   // Settings Form
   const [defaultCurrency, setDefaultCurrency] = useState('$');
@@ -96,10 +98,23 @@ export default function Settings() {
       setVendors(venRes.data.data);
       setDefaultCurrency(setRes.data.default_currency);
       setZohoEnabled(setRes.data.zoho_integration_enabled);
+
+      if (setRes.data.zoho_integration_enabled) {
+        fetchZohoMerchants();
+      }
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchZohoMerchants = async () => {
+    try {
+      const res = await api.get('/zoho/merchants');
+      setZohoMerchants(res.data.data);
+    } catch (e) {
+      console.error("Failed to fetch Zoho merchants", e);
     }
   };
 
@@ -109,6 +124,29 @@ export default function Settings() {
       setVendors(venRes.data.data);
     } catch (e) {
       console.error("Failed to refetch vendors", e);
+    }
+  };
+
+  const handleUpdateVendorMapping = async (vendorId: number, zohoId: string) => {
+    try {
+      await api.put(`/vendors/${vendorId}`, { zoho_merchant_id: zohoId === 'none' ? null : zohoId });
+      setVendors(prev => prev.map(v => v.id === vendorId ? { ...v, zoho_merchant_id: zohoId === 'none' ? null : zohoId } : v));
+      toast.success("Mapping updated");
+    } catch (e: any) {
+      toast.error("Failed to update mapping");
+    }
+  };
+
+  const handleSyncZohoMerchants = async () => {
+    try {
+      setIsSyncingMerchants(true);
+      const res = await api.post('/zoho/merchants/sync');
+      toast.success(res.data.message);
+      await fetchData();
+    } catch (e: any) {
+      toast.error("Sync failed");
+    } finally {
+      setIsSyncingMerchants(false);
     }
   };
 
@@ -313,11 +351,72 @@ export default function Settings() {
             </Card>
 
             <Card>
-              <CardHeader><CardTitle className="text-base flex items-center gap-2"><Users className="h-5 w-5" /> Vendor Management</CardTitle></CardHeader>
-              <CardContent className="space-y-6">
-                <div className="text-sm text-zinc-500 dark:text-zinc-400">You have {vendors.length} vendors. Use the tool below to clean up duplicates.</div>
-                <div className="p-4 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border border-zinc-100 dark:border-zinc-800 space-y-4">
-                  <h4 className="text-sm font-medium">Merge Vendors</h4>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="text-base flex items-center gap-2"><Users className="h-5 w-5" /> Vendor Management</CardTitle>
+                {zohoEnabled && (
+                  <Button variant="outline" size="sm" onClick={handleSyncZohoMerchants} disabled={isSyncingMerchants}>
+                    {isSyncingMerchants ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+                    Auto-Sync Zoho Names
+                  </Button>
+                )}
+              </CardHeader>
+              <CardContent className="space-y-8">
+                <div className="text-sm text-zinc-500 dark:text-zinc-400">Manage your local vendors and map them to official Zoho merchants for accurate syncing.</div>
+                
+                {/* Mapping Table */}
+                {vendors.length > 0 && (
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-bold uppercase tracking-widest text-zinc-400">Vendor Mapping</h4>
+                    <div className="border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden">
+                      <div className="max-h-[400px] overflow-y-auto">
+                        <table className="w-full text-sm text-left">
+                          <thead className="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 sticky top-0">
+                            <tr>
+                              <th className="px-4 py-3 font-bold">Local Vendor</th>
+                              <th className="px-4 py-3 font-bold text-center">Receipts</th>
+                              <th className="px-4 py-3 font-bold">Zoho Merchant Mapping</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-zinc-100 dark:divide-zinc-900">
+                            {vendors.map((v) => (
+                              <tr key={v.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50 transition-colors">
+                                <td className="px-4 py-3 font-medium">{v.name}</td>
+                                <td className="px-4 py-3 text-center text-zinc-500 font-mono text-xs">{v.receipt_count}</td>
+                                <td className="px-4 py-3">
+                                  {zohoEnabled ? (
+                                    <Select 
+                                      value={v.zoho_merchant_id || "none"} 
+                                      onValueChange={(val) => handleUpdateVendorMapping(v.id, val)}
+                                    >
+                                      <SelectTrigger className="h-9 bg-white dark:bg-zinc-950 text-xs rounded-lg px-3">
+                                        <SelectValue placeholder="No mapping">
+                                          {v.zoho_merchant_id && v.zoho_merchant_id !== 'none' ? (
+                                            zohoMerchants.find(zm => zm.merchant_id === v.zoho_merchant_id)?.merchant_name || v.zoho_merchant_id
+                                          ) : "No mapping (Manual sync)"}
+                                        </SelectValue>
+                                      </SelectTrigger>
+                                      <SelectContent className="max-w-[300px]">
+                                        <SelectItem value="none">No mapping (Manual sync)</SelectItem>
+                                        {zohoMerchants.map((zm) => (
+                                          <SelectItem key={zm.merchant_id} value={zm.merchant_id}>{zm.merchant_name}</SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                  ) : (
+                                    <span className="text-xs text-zinc-400 italic">Connect Zoho to map</span>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="p-6 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 space-y-4">
+                  <h4 className="text-sm font-bold uppercase tracking-widest text-zinc-400">Merge Duplicates</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <Label>Duplicate Vendor (Will be deleted)</Label>
