@@ -36,7 +36,7 @@ def handle_single_approval(receipt_id: int, user_id: str, db: Session, bg_tasks:
     receipt = db.query(models.Receipt).filter(
         models.Receipt.id == receipt_id,
         models.Receipt.user_id == user_id,
-        models.Receipt.status == models.ReceiptStatus.PENDING
+        models.Receipt.status.in_([models.ReceiptStatus.PENDING, models.ReceiptStatus.FAILED])
     ).first()
     
     if not receipt:
@@ -57,7 +57,7 @@ def handle_single_rejection(receipt_id: int, user_id: str, db: Session):
     receipt = db.query(models.Receipt).filter(
         models.Receipt.id == receipt_id,
         models.Receipt.user_id == user_id,
-        models.Receipt.status == models.ReceiptStatus.PENDING
+        models.Receipt.status.in_([models.ReceiptStatus.PENDING, models.ReceiptStatus.FAILED])
     ).first()
     
     if not receipt:
@@ -92,7 +92,7 @@ def get_review_queue(user: dict = Depends(verify_token), db: Session = Depends(g
             models.Receipt.status.in_([models.ReceiptStatus.PENDING, models.ReceiptStatus.PROCESSING, models.ReceiptStatus.FAILED]),
             models.Receipt.user_id == user['uid']
         )\
-        .order_by(desc(models.Receipt.created_at))\
+        .order_by(desc(models.Receipt.date), desc(models.Receipt.created_at))\
         .all()
     
     result = []
@@ -212,6 +212,10 @@ def update_receipt(receipt_id: int, data: ReceiptUpdate, user: dict = Depends(ve
                 if li_data.amount is not None:
                     li.amount = li_data.amount
 
+    if receipt.status == models.ReceiptStatus.FAILED:
+        receipt.status = models.ReceiptStatus.PENDING
+        receipt.error_message = None
+        
     db.commit()
     return {"status": "success", "message": "Receipt updated successfully"}
 

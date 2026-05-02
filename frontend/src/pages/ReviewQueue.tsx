@@ -98,6 +98,7 @@ export default function ReviewQueue() {
   const startEditing = (receipt: any) => {
     setEditingId(receipt.id);
     setEditForm({
+      image_url: receipt.image_url, // <-- ADDED THIS LINE
       vendor: receipt.vendor,
       date: receipt.date,
       total_amount: receipt.total_amount,
@@ -126,7 +127,7 @@ export default function ReviewQueue() {
       await api.put(`/review/${id}`, editForm);
       setReceipts(prev => prev.map(r => {
         if (r.id === id) {
-          const updatedReceipt = { ...r, ...editForm };
+          const updatedReceipt = { ...r, ...editForm, status: 'PENDING' };
           if (editForm.main_category_id) {
             updatedReceipt.main_category = categories.find(c => c.id === editForm.main_category_id);
           }
@@ -145,10 +146,19 @@ export default function ReviewQueue() {
       }));
       setEditingId(null);
       toast.success("Changes saved");
+      return true;
     } catch (err: any) {
       toast.error("Failed to update receipt: " + (err.response?.data?.detail || err.message));
+      return false;
     } finally {
       setProcessingId(null);
+    }
+  };
+
+  const saveAndApprove = async (id: number) => {
+    const success = await saveEdit(id);
+    if (success) {
+      await handleApprove(id);
     }
   };
 
@@ -335,6 +345,11 @@ export default function ReviewQueue() {
                             <Calendar size={14} className="mr-1 shrink-0" />
                             <span className="truncate">{receipt.date || 'Analyzing date...'}</span>
                           </div>
+                          {receipt.description && (
+                            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 truncate italic">
+                              {receipt.description}
+                            </p>
+                          )}
                         </div>
                         <div className="text-right shrink-0">
                           <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
@@ -413,212 +428,241 @@ export default function ReviewQueue() {
 
       {/* Editing Sheet */}
       <Sheet open={editingId !== null} onOpenChange={(open) => !open && cancelEditing()}>
-        <SheetContent className="w-full sm:max-w-[850px] overflow-y-auto p-0 border-l border-zinc-200 dark:border-zinc-800">
-          <div className="flex flex-col h-full">
-            <SheetHeader className="px-10 py-8 border-b border-zinc-100 dark:border-zinc-900 sticky top-0 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md z-20">
-              <SheetTitle className="text-3xl font-black tracking-tight">Edit Receipt</SheetTitle>
-              <SheetDescription className="text-base">
-                Refine the information extracted by AI.
-              </SheetDescription>
-            </SheetHeader>
-            
-            <div className="flex-1 overflow-y-auto px-10 py-10 space-y-12 pb-40">
-                {/* Basic Info Section */}
-                <div className="space-y-8">
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label className={labelClass}>Vendor / Recipient</Label>
-                      <Input 
-                        value={editForm.vendor || ''}
-                        onChange={(e) => setEditForm({...editForm, vendor: e.target.value})}
-                        className={inputBaseClass}
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label className={labelClass}>Date</Label>
-                      <Popover>
-                        <PopoverTrigger className={inputBaseClass + " flex items-center justify-start px-4"}>
-                            <Calendar className="mr-3 h-5 w-5 text-zinc-400 shrink-0" />
-                            <span className="truncate">{editForm.date ? format(parseISO(editForm.date), "PPP") : "Pick a date"}</span>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0 rounded-2xl shadow-2xl border-zinc-200 dark:border-zinc-800" align="start">
-                          <CalendarComponent
-                            mode="single"
-                            selected={editForm.date ? parseISO(editForm.date) : undefined}
-                            onSelect={(date) => setEditForm({...editForm, date: date ? format(date, 'yyyy-MM-dd') : ''})}
-                            initialFocus
+        <SheetContent className="sm:max-w-none w-full md:w-[80vw] lg:w-[60vw] max-w-screen-xl p-0 border-l border-zinc-200 dark:border-zinc-800">
+          <div className="grid grid-cols-1 lg:grid-cols-5 h-full">
+            {/* Left Panel: Image */}
+            <div className="hidden lg:flex flex-col h-full bg-zinc-100 dark:bg-zinc-900/50 p-6 sticky top-0 col-span-2">
+              <div className="w-full h-full rounded-2xl bg-white dark:bg-black overflow-hidden shadow-inner border border-zinc-200 dark:border-zinc-800">
+                {editForm.image_url && (
+                  isPdf(editForm.image_url) ? (
+                    <iframe src={`${editForm.image_url}#toolbar=0&view=FitH`} className="w-full h-full border-0" title="Receipt PDF" />
+                  ) : (
+                    <img src={editForm.image_url} alt="Receipt" className="w-full h-full object-contain" />
+                  )
+                )}
+              </div>
+            </div>
+
+            {/* Right Panel: Form */}
+            <div className="flex flex-col h-full col-span-1 lg:col-span-3 relative overflow-hidden">
+              <SheetHeader className="px-10 py-8 border-b border-zinc-100 dark:border-zinc-900 sticky top-0 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md z-20">
+                <SheetTitle className="text-3xl font-black tracking-tight">Edit Receipt</SheetTitle>
+                <SheetDescription className="text-base">
+                  Refine the information extracted by AI.
+                </SheetDescription>
+              </SheetHeader>
+              
+              <div className="flex-1 overflow-y-auto">
+                <div className="px-10 py-10 space-y-12 pb-40">
+                    {/* Basic Info Section */}
+                    <div className="space-y-8">
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label className={labelClass}>Vendor / Recipient</Label>
+                          <Input 
+                            value={editForm.vendor || ''}
+                            onChange={(e) => setEditForm({...editForm, vendor: e.target.value})}
+                            className={inputBaseClass}
                           />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label className={labelClass}>Date</Label>
+                          <Popover>
+                            <PopoverTrigger className={inputBaseClass + " flex items-center justify-start px-4"}>
+                                <Calendar className="mr-3 h-5 w-5 text-zinc-400 shrink-0" />
+                                <span className="truncate">{editForm.date ? format(parseISO(editForm.date), "PPP") : "Pick a date"}</span>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0 rounded-2xl shadow-2xl border-zinc-200 dark:border-zinc-800" align="start">
+                              <CalendarComponent
+                                mode="single"
+                                selected={editForm.date ? parseISO(editForm.date) : undefined}
+                                onSelect={(date) => setEditForm({...editForm, date: date ? format(date, 'yyyy-MM-dd') : ''})}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
 
-                    <div className="space-y-2">
-                      <Label className={labelClass}>Currency</Label>
-                      <Select
-                        value={editForm.currency || "$"}
-                        onValueChange={(val) => setEditForm({...editForm, currency: val})}
-                      >
-                        <SelectTrigger className={inputBaseClass + " px-4"}>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl">
-                          <SelectItem value="$">$</SelectItem>
-                          <SelectItem value="₫">₫</SelectItem>
-                          <SelectItem value="VNĐ">VNĐ</SelectItem>
-                          <SelectItem value="€">€</SelectItem>
-                          <SelectItem value="£">£</SelectItem>
-                          <SelectItem value="S$">S$</SelectItem>
-                          <SelectItem value="RM">RM</SelectItem>
-                          {defaultCurrency && !["$", "₫", "VNĐ", "€", "£", "S$", "RM"].includes(defaultCurrency) && (
-                            <SelectItem value={defaultCurrency}>{defaultCurrency}</SelectItem>
-                          )}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label className={labelClass}>Total Amount</Label>
-                      <Input 
-                        type="number"
-                        className={inputBaseClass + " text-2xl"}
-                        value={editForm.total_amount || 0}
-                        onChange={(e) => setEditForm({...editForm, total_amount: parseFloat(e.target.value) || 0})}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label className={labelClass}>Memo / Description</Label>
-                      <Input 
-                        placeholder="What was this for?"
-                        value={editForm.description || ''}
-                        onChange={(e) => setEditForm({...editForm, description: e.target.value})}
-                        className={inputBaseClass}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Categorization Section */}
-                <div className="space-y-8">
-                  <h3 className="text-xs font-black uppercase tracking-widest text-zinc-400">Categorization</h3>
-                  
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <Label className={labelClass}>Main Category</Label>
-                      <Select 
-                        value={editForm.main_category_id?.toString() || ""}
-                        onValueChange={(val) => setEditForm({...editForm, main_category_id: parseInt(val)})}
-                      >
-                        <SelectTrigger className={inputBaseClass + " h-16 px-5"}>
-                          <SelectValue placeholder="Select a category">
-                             {editForm.main_category_id ? (
-                               <div className="flex items-center gap-3">
-                                  <div 
-                                    className="w-4 h-4 rounded-full border-2 border-white dark:border-zinc-800 shadow-sm" 
-                                    style={{backgroundColor: categories.find(c => c.id === editForm.main_category_id)?.color_code}} 
-                                  />
-                                  <span className="font-bold">{categories.find(c => c.id === editForm.main_category_id)?.name}</span>
-                               </div>
-                             ) : "Select a category"}
-                          </SelectValue>
-                        </SelectTrigger>
-                        <SelectContent className="rounded-2xl p-2">
-                          {categories.map((c) => (
-                            <SelectItem key={c.id} value={c.id.toString()} className="rounded-lg py-3">
-                              <div className="flex items-center gap-3">
-                                 <div className="w-3 h-3 rounded-full shadow-inner" style={{backgroundColor: c.color_code}} />
-                                 <span className="font-medium text-sm">{c.name}</span>
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="flex items-center justify-between p-6 bg-zinc-900 dark:bg-zinc-50 border border-zinc-800 dark:border-zinc-200 rounded-2xl shadow-xl transition-all">
-                      <div className="space-y-1">
-                        <Label className="text-sm font-bold text-zinc-50 dark:text-zinc-900 mb-0">Track Line Items</Label>
-                        <p className="text-[11px] text-zinc-400 dark:text-zinc-500 font-medium uppercase tracking-tight">Extract individual items for analytics</p>
-                      </div>
-                      <Switch 
-                        checked={editForm.track_line_items}
-                        onCheckedChange={(checked) => setEditForm({...editForm, track_line_items: checked})}
-                        className="scale-125 data-[state=checked]:bg-green-500"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Line Items Section */}
-                {editForm.track_line_items && (
-                  <div className="space-y-8 animate-in fade-in slide-in-from-top-4 duration-300">
-                    <div className="flex items-center justify-between">
-                       <h3 className="text-xs font-black uppercase tracking-widest text-zinc-400">Itemized Breakdown</h3>
-                       <Badge variant="outline" className="rounded-full px-3 py-1 text-[11px] font-black">{editForm.line_items?.length || 0} Items</Badge>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      {editForm.line_items?.map((item: any, idx: number) => (
-                        <div key={item.id} className="p-6 bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-900 rounded-2xl shadow-sm hover:border-zinc-200 dark:hover:border-zinc-800 transition-all space-y-4">
-                          <div className="flex justify-between items-start">
-                            <span className="text-base font-bold text-zinc-900 dark:text-zinc-100 leading-tight pr-4">{item.description}</span>
-                            <span className="text-lg font-black font-mono text-zinc-900 dark:text-zinc-50">{editForm.currency}{formatCurrency(item.amount || 0, editForm.currency)}</span>
-                          </div>
-                          <Select 
-                            value={item.category_id?.toString() || "none"}
-                            onValueChange={(val) => {
-                              const updatedItems = [...editForm.line_items];
-                              updatedItems[idx].category_id = val === "none" ? null : parseInt(val);
-                              setEditForm({...editForm, line_items: updatedItems});
-                            }}
+                        <div className="space-y-2">
+                          <Label className={labelClass}>Currency</Label>
+                          <Select
+                            value={editForm.currency || "$"}
+                            onValueChange={(val) => setEditForm({...editForm, currency: val})}
                           >
-                            <SelectTrigger className="h-12 text-sm bg-zinc-50 dark:bg-zinc-900/50 border-zinc-100 dark:border-zinc-800 rounded-xl">
-                               <SelectValue placeholder="Category">
-                                 <div className="flex items-center gap-2">
-                                    {item.category_id ? (
-                                      <>
-                                        <div className="w-2.5 h-2.5 rounded-full" style={{backgroundColor: categories.find(c => c.id === item.category_id)?.color_code}} />
-                                        <span className="font-bold">{categories.find(c => c.id === item.category_id)?.name}</span>
-                                      </>
-                                    ) : <span className="text-zinc-400">Uncategorized</span>}
-                                 </div>
-                               </SelectValue>
+                            <SelectTrigger className={inputBaseClass + " px-4"}>
+                              <SelectValue />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl">
-                              <SelectItem value="none">Uncategorized</SelectItem>
+                              <SelectItem value="$">$</SelectItem>
+                              <SelectItem value="₫">₫</SelectItem>
+                              <SelectItem value="VNĐ">VNĐ</SelectItem>
+                              <SelectItem value="€">€</SelectItem>
+                              <SelectItem value="£">£</SelectItem>
+                              <SelectItem value="S$">S$</SelectItem>
+                              <SelectItem value="RM">RM</SelectItem>
+                              {defaultCurrency && !["$", "₫", "VNĐ", "€", "£", "S$", "RM"].includes(defaultCurrency) && (
+                                <SelectItem value={defaultCurrency}>{defaultCurrency}</SelectItem>
+                              )}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className={labelClass}>Total Amount</Label>
+                          <Input 
+                            type="number"
+                            className={inputBaseClass + " text-2xl"}
+                            value={editForm.total_amount || 0}
+                            onChange={(e) => setEditForm({...editForm, total_amount: parseFloat(e.target.value) || 0})}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className={labelClass}>Memo / Description</Label>
+                          <Input 
+                            placeholder="What was this for?"
+                            value={editForm.description || ''}
+                            onChange={(e) => setEditForm({...editForm, description: e.target.value})}
+                            className={inputBaseClass}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Categorization Section */}
+                    <div className="space-y-8">
+                      <h3 className="text-xs font-black uppercase tracking-widest text-zinc-400">Categorization</h3>
+                      
+                      <div className="space-y-6">
+                        <div className="space-y-2">
+                          <Label className={labelClass}>Main Category</Label>
+                          <Select 
+                            value={editForm.main_category_id?.toString() || ""}
+                            onValueChange={(val) => setEditForm({...editForm, main_category_id: parseInt(val)})}
+                          >
+                            <SelectTrigger className={inputBaseClass + " h-16 px-5"}>
+                              <SelectValue placeholder="Select a category">
+                                 {editForm.main_category_id ? (
+                                   <div className="flex items-center gap-3">
+                                      <div 
+                                        className="w-4 h-4 rounded-full border-2 border-white dark:border-zinc-800 shadow-sm" 
+                                        style={{backgroundColor: categories.find(c => c.id === editForm.main_category_id)?.color_code}} 
+                                      />
+                                      <span className="font-bold">{categories.find(c => c.id === editForm.main_category_id)?.name}</span>
+                                   </div>
+                                 ) : "Select a category"}
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent className="rounded-2xl p-2">
                               {categories.map((c) => (
-                                <SelectItem key={c.id} value={c.id.toString()}>
-                                  <div className="flex items-center gap-2">
-                                     <div className="w-2.5 h-2.5 rounded-full" style={{backgroundColor: c.color_code}} />
-                                     {c.name}
+                                <SelectItem key={c.id} value={c.id.toString()} className="rounded-lg py-3">
+                                  <div className="flex items-center gap-3">
+                                     <div className="w-3 h-3 rounded-full shadow-inner" style={{backgroundColor: c.color_code}} />
+                                     <span className="font-medium text-sm">{c.name}</span>
                                   </div>
                                 </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-            </div>
 
-            <SheetFooter className="px-10 py-8 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl border-t border-zinc-100 dark:border-zinc-900 flex flex-row gap-4 sticky bottom-0 z-20">
-              <Button variant="outline" onClick={cancelEditing} className="flex-1 h-16 rounded-2xl font-black text-base border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all">
-                Cancel
-              </Button>
-              <Button 
-                onClick={() => editingId && saveEdit(editingId)} 
-                disabled={processingId !== null} 
-                className="flex-[2] h-16 rounded-2xl font-black text-lg bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 shadow-2xl transition-all active:scale-95"
-              >
-                {processingId !== null ? <Loader2 className="h-6 w-6 animate-spin" /> : "Save Changes"}
-              </Button>
-            </SheetFooter>
+                        <div className="flex items-center justify-between p-6 bg-zinc-900 dark:bg-zinc-50 border border-zinc-800 dark:border-zinc-200 rounded-2xl shadow-xl transition-all">
+                          <div className="space-y-1">
+                            <Label className="text-sm font-bold text-zinc-50 dark:text-zinc-900 mb-0">Track Line Items</Label>
+                            <p className="text-[11px] text-zinc-400 dark:text-zinc-500 font-medium uppercase tracking-tight">Extract individual items for analytics</p>
+                          </div>
+                          <Switch 
+                            checked={editForm.track_line_items}
+                            onCheckedChange={(checked) => setEditForm({...editForm, track_line_items: checked})}
+                            className="scale-125 data-[state=checked]:bg-green-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Line Items Section */}
+                    {editForm.track_line_items && (
+                      <div className="space-y-8 animate-in fade-in slide-in-from-top-4 duration-300">
+                        <div className="flex items-center justify-between">
+                           <h3 className="text-xs font-black uppercase tracking-widest text-zinc-400">Itemized Breakdown</h3>
+                           <Badge variant="outline" className="rounded-full px-3 py-1 text-[11px] font-black">{editForm.line_items?.length || 0} Items</Badge>
+                        </div>
+                        
+                        <div className="space-y-4">
+                          {editForm.line_items?.map((item: any, idx: number) => (
+                            <div key={item.id} className="p-6 bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-900 rounded-2xl shadow-sm hover:border-zinc-200 dark:hover:border-zinc-800 transition-all space-y-4">
+                              <div className="flex justify-between items-start">
+                                <span className="text-base font-bold text-zinc-900 dark:text-zinc-100 leading-tight pr-4">{item.description}</span>
+                                <span className="text-lg font-black font-mono text-zinc-900 dark:text-zinc-50">{editForm.currency}{formatCurrency(item.amount || 0, editForm.currency)}</span>
+                              </div>
+                              <Select 
+                                value={item.category_id?.toString() || "none"}
+                                onValueChange={(val) => {
+                                  const updatedItems = [...editForm.line_items];
+                                  updatedItems[idx].category_id = val === "none" ? null : parseInt(val);
+                                  setEditForm({...editForm, line_items: updatedItems});
+                                }}
+                              >
+                                <SelectTrigger className="h-12 text-sm bg-zinc-50 dark:bg-zinc-900/50 border-zinc-100 dark:border-zinc-800 rounded-xl">
+                                   <SelectValue placeholder="Category">
+                                     <div className="flex items-center gap-2">
+                                        {item.category_id ? (
+                                          <>
+                                            <div className="w-2.5 h-2.5 rounded-full" style={{backgroundColor: categories.find(c => c.id === item.category_id)?.color_code}} />
+                                            <span className="font-bold">{categories.find(c => c.id === item.category_id)?.name}</span>
+                                          </>
+                                        ) : <span className="text-zinc-400">Uncategorized</span>}
+                                     </div>
+                                   </SelectValue>
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl">
+                                  <SelectItem value="none">Uncategorized</SelectItem>
+                                  {categories.map((c) => (
+                                    <SelectItem key={c.id} value={c.id.toString()}>
+                                      <div className="flex items-center gap-2">
+                                         <div className="w-2.5 h-2.5 rounded-full" style={{backgroundColor: c.color_code}} />
+                                         {c.name}
+                                      </div>
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                </div>
+              </div>
+
+              <SheetFooter className="px-10 py-8 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl border-t border-zinc-100 dark:border-zinc-900 flex flex-row gap-4 bottom-0 left-0 right-0 z-20">
+                <Button variant="outline" onClick={cancelEditing} className="flex-1 h-16 rounded-2xl font-black text-base border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all">
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={() => editingId && saveEdit(editingId)} 
+                  disabled={processingId !== null} 
+                  className="flex-[2] h-16 rounded-2xl font-black text-lg bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 shadow-2xl transition-all active:scale-95"
+                >
+                  {processingId !== null ? <Loader2 className="h-6 w-6 animate-spin" /> : "Save Changes"}
+                </Button>
+                <Button 
+                  onClick={() => editingId && saveAndApprove(editingId)} 
+                  disabled={processingId !== null} 
+                  className="flex-[2] h-16 rounded-2xl font-black text-lg bg-green-600 text-white hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 dark:text-white shadow-2xl transition-all active:scale-95"
+                >
+                  {processingId !== null ? <Loader2 className="h-6 w-6 animate-spin" /> : "Save & Approve"}
+                </Button>
+              </SheetFooter>
+            </div>
           </div>
         </SheetContent>
       </Sheet>
+
+
+
+
 
 
       {selectedIds.length > 0 && (
