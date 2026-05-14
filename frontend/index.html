@@ -4,7 +4,16 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>Expensify</title>
+    <script>
+      if (import.meta.env.MODE === 'staging') {
+        document.title = 'Expensify (Staging)';
+        document.querySelector('link[rel="icon"]').href = '/favicon-staging.svg';
+      } else if (import.meta.env.MODE === 'development') {
+        document.title = 'Expensify (Dev)';
+        document.querySelector('link[rel="icon"]').href = '/favicon-dev.svg';
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
